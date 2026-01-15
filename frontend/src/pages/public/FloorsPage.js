@@ -1,0 +1,385 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
+import {
+  HiSearch,
+  HiFilter,
+  HiAdjustments,
+  HiViewGrid,
+  HiViewList,
+  HiX
+} from 'react-icons/hi';
+import { floorApi } from '../../services/api';
+import FloorCard from '../../components/public/FloorCard';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
+
+const FloorsPage = () => {
+  const [floors, setFloors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    status: '',
+    minPrice: '',
+    maxPrice: '',
+    minArea: '',
+    maxArea: '',
+    sortBy: 'floorNumber',
+    sortOrder: 'asc'
+  });
+  const [viewMode, setViewMode] = useState('grid');
+  const [showFilters, setShowFilters] = useState(false);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pages: 1,
+    total: 0,
+    limit: 12
+  });
+
+  useEffect(() => {
+    fetchFloors();
+  }, [filters, pagination.page]);
+
+  const fetchFloors = async () => {
+    try {
+      setLoading(true);
+      const params = {
+        ...filters,
+        page: pagination.page,
+        limit: pagination.limit,
+        ...(searchTerm && { search: searchTerm })
+      };
+      
+      const response = await floorApi.getAll(params);
+      setFloors(response.data.floors || []);
+      setPagination(response.data.pagination || pagination);
+    } catch (error) {
+      console.error('Error fetching floors:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+    setPagination(prev => ({ ...prev, page: 1 }));
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    fetchFloors();
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      status: '',
+      minPrice: '',
+      maxPrice: '',
+      minArea: '',
+      maxArea: '',
+      sortBy: 'floorNumber',
+      sortOrder: 'asc'
+    });
+    setSearchTerm('');
+    setPagination(prev => ({ ...prev, page: 1 }));
+  };
+
+  const statusOptions = [
+    { value: '', label: 'All Status' },
+    { value: 'available', label: 'Available' },
+    { value: 'occupied', label: 'Occupied' },
+    { value: 'under_maintenance', label: 'Under Maintenance' },
+    { value: 'reserved', label: 'Reserved' }
+  ];
+
+  const sortOptions = [
+    { value: 'floorNumber:asc', label: 'Floor Number (Low to High)' },
+    { value: 'floorNumber:desc', label: 'Floor Number (High to Low)' },
+    { value: 'totalPrice:asc', label: 'Price (Low to High)' },
+    { value: 'totalPrice:desc', label: 'Price (High to Low)' },
+    { value: 'area:asc', label: 'Area (Small to Large)' },
+    { value: 'area:desc', label: 'Area (Large to Small)' }
+  ];
+
+  const hasActiveFilters = Object.values(filters).some(value => value !== '') || searchTerm;
+
+  return (
+    <>
+      <Helmet>
+        <title>Available Office Spaces | TowerSpace</title>
+        <meta name="description" content="Browse available office spaces and find your perfect workspace at TowerSpace." />
+      </Helmet>
+
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Available Spaces</h1>
+          <p className="text-xl text-gray-200 max-w-2xl mx-auto">
+            Find your perfect office space among our premium selections
+          </p>
+        </div>
+      </section>
+
+      {/* Filters and Search */}
+      <section className="py-8 bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="flex-1 max-w-2xl">
+              <div className="relative">
+                <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search by floor number, name, or amenities..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+            </form>
+
+            {/* Controls */}
+            <div className="flex items-center space-x-4">
+              {/* View Toggle */}
+              <div className="hidden md:flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow' : ''}`}
+                >
+                  <HiViewGrid className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded ${viewMode === 'list' ? 'bg-white shadow' : ''}`}
+                >
+                  <HiViewList className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Sort Select */}
+              <select
+                value={`${filters.sortBy}:${filters.sortOrder}`}
+                onChange={(e) => {
+                  const [sortBy, sortOrder] = e.target.value.split(':');
+                  handleFilterChange('sortBy', sortBy);
+                  handleFilterChange('sortOrder', sortOrder);
+                }}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                {sortOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+
+              {/* Filter Toggle */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+              >
+                <HiFilter className="h-5 w-5" />
+                <span>Filters</span>
+                {hasActiveFilters && (
+                  <span className="bg-white text-primary-600 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    !
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Filter Panel */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-4 border rounded-lg p-6 bg-gray-50"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold flex items-center">
+                    <HiAdjustments className="mr-2 h-5 w-5" />
+                    Filters
+                  </h3>
+                  <div className="flex items-center space-x-4">
+                    <button
+                      onClick={clearFilters}
+                      className="text-sm text-primary-600 hover:text-primary-700"
+                    >
+                      Clear all
+                    </button>
+                    <button
+                      onClick={() => setShowFilters(false)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <HiX className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {/* Status Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Status
+                    </label>
+                    <select
+                      value={filters.status}
+                      onChange={(e) => handleFilterChange('status', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    >
+                      {statusOptions.map(option => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Price Range */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Min Price
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="$"
+                      value={filters.minPrice}
+                      onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Max Price
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="$"
+                      value={filters.maxPrice}
+                      onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    />
+                  </div>
+
+                  {/* Area Range */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Min Area (sq ft)
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="sq ft"
+                      value={filters.minArea}
+                      onChange={(e) => handleFilterChange('minArea', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </section>
+
+      {/* Floors Grid/List */}
+      <section className="py-8 bg-gray-50 min-h-[600px]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <LoadingSpinner size="lg" />
+            </div>
+          ) : (
+            <>
+              {/* Results Count */}
+              <div className="mb-6">
+                <p className="text-gray-600">
+                  Showing <span className="font-semibold">{floors.length}</span> of{' '}
+                  <span className="font-semibold">{pagination.total}</span> spaces
+                </p>
+              </div>
+
+              {/* Floors Display */}
+              {floors.length > 0 ? (
+                <div className={viewMode === 'grid' 
+                  ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
+                  : 'space-y-6'
+                }>
+                  {floors.map((floor, index) => (
+                    <motion.div
+                      key={floor._id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                    >
+                      <FloorCard floor={floor} viewMode={viewMode} />
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-20">
+                  <HiSearch className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No spaces found</h3>
+                  <p className="text-gray-600 mb-6">
+                    Try adjusting your filters or search terms
+                  </p>
+                  <button
+                    onClick={clearFilters}
+                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                  >
+                    Clear all filters
+                  </button>
+                </div>
+              )}
+
+              {/* Pagination */}
+              {pagination.pages > 1 && (
+                <div className="mt-12 flex justify-center">
+                  <nav className="flex items-center space-x-2">
+                    <button
+                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                      disabled={pagination.page === 1}
+                      className="px-3 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Previous
+                    </button>
+                    
+                    {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
+                          className={`px-3 py-2 border rounded-lg ${
+                            pagination.page === pageNum
+                              ? 'bg-primary-600 text-white border-primary-600'
+                              : 'hover:bg-gray-50'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+
+                    <button
+                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                      disabled={pagination.page === pagination.pages}
+                      className="px-3 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </nav>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </section>
+    </>
+  );
+};
+
+export default FloorsPage;
