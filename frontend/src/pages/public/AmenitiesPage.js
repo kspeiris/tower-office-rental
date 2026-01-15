@@ -5,8 +5,7 @@ import {
   HiWifi,
   HiShieldCheck,
   HiTruck,
-  HiCoffee,
-  HiFire,
+  HiFire, // Changed from HiCoffee
   HiDesktopComputer,
   HiPhone,
   HiLockClosed,
@@ -35,7 +34,7 @@ const AmenitiesPage = () => {
       category: 'Convenience'
     },
     {
-      icon: <HiCoffee className="h-8 w-8" />,
+      icon: <HiFire className="h-8 w-8" />, // Changed icon
       title: 'Executive Lounge',
       description: 'Premium lounge area with complimentary coffee, tea, and refreshments.',
       category: 'Hospitality'

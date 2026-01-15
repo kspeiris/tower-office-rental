@@ -6,7 +6,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import {
   HiArrowLeft,
-  HiBuildingOffice,
+  HiOfficeBuilding, // Changed from HiBuildingOffice
   HiCalendar,
   HiCurrencyDollar
 } from 'react-icons/hi';
@@ -111,8 +111,10 @@ const InquiryFormPage = () => {
   return (
     <>
       <Helmet>
-        <title>Inquiry for Floor {floor.floorNumber} | TowerSpace</title>
-      </Helmet>
+  <title>
+    {floor ? `Inquiry for Floor ${floor.floorNumber} | TowerSpace` : 'Submit Inquiry | TowerSpace'}
+  </title>
+</Helmet>
 
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
@@ -315,7 +317,7 @@ const InquiryFormPage = () => {
                 {/* Floor Summary */}
                 <div className="card p-6">
                   <div className="flex items-center space-x-3 mb-4">
-                    <HiBuildingOffice className="h-6 w-6 text-primary-600" />
+                    <HiOfficeBuilding className="h-6 w-6 text-primary-600" /> {/* Updated here */}
                     <h3 className="text-lg font-semibold">Floor Details</h3>
                   </div>
                   

@@ -3,7 +3,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   HiHome,
-  HiBuildingOffice,
+  HiOfficeBuilding,
   HiInbox,
   HiCog,
   HiLogout,
@@ -25,7 +25,7 @@ const AdminLayout = () => {
 
   const menuItems = [
     { path: '/admin', label: 'Dashboard', icon: <HiHome className="h-5 w-5" /> },
-    { path: '/admin/floors', label: 'Floor Management', icon: <HiBuildingOffice className="h-5 w-5" /> },
+    { path: '/admin/floors', label: 'Floor Management', icon: <HiOfficeBuilding className="h-5 w-5" /> },
     { path: '/admin/inquiries', label: 'Inquiries', icon: <HiInbox className="h-5 w-5" /> },
     { path: '/admin/settings', label: 'Settings', icon: <HiCog className="h-5 w-5" /> }
   ];

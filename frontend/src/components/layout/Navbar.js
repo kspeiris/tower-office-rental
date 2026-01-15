@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { HiMenu, HiX, HiBuildingOffice, HiChevronDown } from 'react-icons/hi';
+import { HiMenu, HiX, HiOfficeBuilding, HiChevronDown } from 'react-icons/hi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
@@ -24,7 +24,7 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <HiBuildingOffice className="h-8 w-8 text-primary-600" />
+              <HiOfficeBuilding className="h-8 w-8 text-primary-600" />
               <span className="text-2xl font-bold text-gray-900">
                 Tower<span className="text-primary-600">Space</span>
               </span>

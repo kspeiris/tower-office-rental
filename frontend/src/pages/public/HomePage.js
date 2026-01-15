@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { 
-  HiBuildingOffice, 
+  HiOfficeBuilding, // Changed from HiBuildingOffice
   HiCheckCircle, 
   HiArrowRight,
   HiUsers,
@@ -36,7 +36,7 @@ const HomePage = () => {
 
   const features = [
     {
-      icon: <HiBuildingOffice className="h-8 w-8" />,
+      icon: <HiOfficeBuilding className="h-8 w-8" />, // Updated here
       title: 'Premium Spaces',
       description: 'State-of-the-art office spaces designed for productivity and comfort.'
     },
@@ -178,7 +178,7 @@ const HomePage = () => {
 
           {!loading && featuredFloors.length === 0 && (
             <div className="text-center py-12">
-              <HiBuildingOffice className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <HiOfficeBuilding className="h-16 w-16 text-gray-400 mx-auto mb-4" /> {/* Updated here */}
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No Featured Spaces Available</h3>
               <p className="text-gray-600">Check back soon for premium office spaces.</p>
             </div>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { HiBuildingOffice, HiLock, HiMail } from 'react-icons/hi';
+import { HiOfficeBuilding, HiLockClosed, HiMail } from 'react-icons/hi';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -44,7 +44,7 @@ const AdminLogin = () => {
         >
           <div className="text-center">
             <div className="flex justify-center">
-              <HiBuildingOffice className="h-12 w-12 text-primary-600" />
+              <HiOfficeBuilding className="h-12 w-12 text-primary-600" />
             </div>
             <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
               TowerSpace Admin
@@ -91,7 +91,7 @@ const AdminLogin = () => {
                 </label>
                 <div className="mt-1 relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <HiLock className="h-5 w-5 text-gray-400" />
+                    <HiLockClosed className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
                     id="password"

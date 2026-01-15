@@ -9,7 +9,11 @@ const validate = (validations) => {
       return next();
     }
 
-    res.status(400).json({ errors: errors.array() });
+    // FIXED: Added success: false to match expected format
+    res.status(400).json({ 
+      success: false,
+      errors: errors.array() 
+    });
   };
 };
 
@@ -104,8 +108,6 @@ const authValidations = {
     body('password')
       .notEmpty()
       .withMessage('Password is required')
-      .isLength({ min: 6 })
-      .withMessage('Password must be at least 6 characters')
   ]),
 
   register: validate([
@@ -127,8 +129,6 @@ const authValidations = {
       .withMessage('Password is required')
       .isLength({ min: 6 })
       .withMessage('Password must be at least 6 characters')
-      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-      .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number')
   ])
 };
 

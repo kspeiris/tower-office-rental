@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import {
-  HiBuildingOffice,
+  HiOfficeBuilding,
   HiUsers,
   HiCurrencyDollar,
   HiChartBar,
@@ -44,7 +44,7 @@ const AdminDashboard = () => {
     {
       title: 'Total Floors',
       value: stats?.totalFloors || 0,
-      icon: <HiBuildingOffice className="h-6 w-6" />,
+      icon: <HiOfficeBuilding className="h-6 w-6" />,
       color: 'blue',
       change: '+2%',
       changeType: 'increase'
@@ -52,7 +52,7 @@ const AdminDashboard = () => {
     {
       title: 'Available Floors',
       value: stats?.availableFloors || 0,
-      icon: <HiBuildingOffice className="h-6 w-6" />,
+      icon: <HiOfficeBuilding className="h-6 w-6" />,
       color: 'green',
       change: '+5%',
       changeType: 'increase'

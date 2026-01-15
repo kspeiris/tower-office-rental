@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import {
   HiArrowLeft,
   HiCheckCircle,
-  HiMapPin,
+  HiLocationMarker, // Changed from HiMapPin
   HiArrowsExpand,
   HiUserGroup,
   HiCalendar,
@@ -75,9 +75,11 @@ const FloorDetailsPage = () => {
   return (
     <>
       <Helmet>
-        <title>{floor.name} | Floor {floor.floorNumber} | TowerSpace</title>
-        <meta name="description" content={floor.description} />
-      </Helmet>
+  <title>
+    {floor ? `${floor.name} | Floor ${floor.floorNumber} | TowerSpace` : 'Floor Details | TowerSpace'}
+  </title>
+  <meta name="description" content={floor?.description || 'Office space details'} />
+</Helmet>
 
       <div className="min-h-screen bg-gray-50">
         {/* Back Navigation */}
@@ -170,7 +172,7 @@ const FloorDetailsPage = () => {
                       <span className="text-gray-600 capitalize">{floor.leaseTerm}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <HiMapPin className="h-5 w-5 text-primary-600" />
+                      <HiLocationMarker className="h-5 w-5 text-primary-600" />
                       <span className="font-medium">View:</span>
                       <span className="text-gray-600 capitalize">{floor.view} View</span>
                     </div>

@@ -1,6 +1,5 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 const User = require('./src/models/User');
 const Floor = require('./src/models/Floor');
 const TowerInfo = require('./src/models/TowerInfo');
@@ -17,14 +16,15 @@ const seedDatabase = async () => {
     await Floor.deleteMany({});
     await TowerInfo.deleteMany({});
 
-    // Create admin user
-    const adminPassword = await bcrypt.hash('admin123', 10);
+    // Create admin user - LET THE MODEL HASH THE PASSWORD
     const admin = await User.create({
       username: 'admin',
       email: 'admin@towerspace.com',
-      password: adminPassword,
+      password: 'admin123', // Plain password - model will hash it
       role: 'super_admin'
     });
+
+    console.log('✅ Admin user created');
 
     // Create sample floors
     const floors = [
@@ -73,6 +73,7 @@ const seedDatabase = async () => {
     ];
 
     await Floor.insertMany(floors);
+    console.log('✅ Floors created');
 
     // Create tower information
     await TowerInfo.create({
@@ -125,11 +126,14 @@ const seedDatabase = async () => {
       }
     });
 
-    console.log('Database seeded successfully!');
-    console.log(`Admin login: admin@towerspace.com / admin123`);
+    console.log('✅ Tower info created');
+    console.log('\n🎉 Database seeded successfully!');
+    console.log('📧 Admin login: admin@towerspace.com');
+    console.log('🔑 Password: admin123\n');
+    
     process.exit(0);
   } catch (error) {
-    console.error('Error seeding database:', error);
+    console.error('❌ Error seeding database:', error);
     process.exit(1);
   }
 };

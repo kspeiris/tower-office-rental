@@ -1,8 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import toast from 'react-hot-toast';
-
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const AuthContext = createContext();
 
@@ -19,72 +17,117 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Configure axios
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    }
-    axios.defaults.baseURL = API_URL;
-  }, []);
+    const initAuth = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
 
-  // Load user from localStorage on mount
-  useEffect(() => {
-    const loadUser = async () => {
-      const token = localStorage.getItem('token');
-      const storedUser = localStorage.getItem('user');
+        console.log('🔍 Checking existing auth...', { hasToken: !!token, hasUser: !!storedUser });
 
-      if (token && storedUser) {
-        try {
-          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          setUser(JSON.parse(storedUser));
-          setIsAuthenticated(true);
-        } catch (error) {
-          console.error('Failed to load user:', error);
-          logout();
+        if (token && storedUser) {
+          try {
+            const response = await api.get('/auth/profile');
+            console.log('✅ Profile response:', response.data);
+            
+            if (response.data.success) {
+              setUser(response.data.user);
+              setIsAuthenticated(true);
+              console.log('✅ Auth restored');
+            } else {
+              console.log('❌ Profile check failed');
+              localStorage.removeItem('token');
+              localStorage.removeItem('user');
+            }
+          } catch (error) {
+            console.error('❌ Profile check error:', error);
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+          }
         }
+      } catch (error) {
+        console.error('❌ Auth initialization error:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    loadUser();
+    initAuth();
   }, []);
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('/auth/login', { email, password });
-      const { token, user } = response.data;
-
-      // Store token and user
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      console.log('🔐 Attempting login...', { email });
+      const response = await api.post('/auth/login', { email, password });
       
-      // Set axios header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      console.log('📥 Login response:', response.data);
       
-      setUser(user);
-      setIsAuthenticated(true);
+      if (response.data.success && response.data.token) {
+        const { token, user } = response.data;
+        
+        console.log('✅ Login successful, saving data...');
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        setUser(user);
+        setIsAuthenticated(true);
+        
+        toast.success('Login successful!');
+        return { success: true, user };
+      }
       
-      toast.success('Login successful!');
-      return { success: true };
+      const errorMsg = response.data.error || 'Login failed';
+      console.log('❌ Login failed:', errorMsg);
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg };
     } catch (error) {
-      const message = error.response?.data?.error || 'Login failed';
-      toast.error(message);
-      return { success: false, error: message };
+      console.error('❌ Login error:', error);
+      console.error('Error response:', error.response?.data);
+      const errorMsg = error.response?.data?.error || 'Login failed. Please try again.';
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg };
+    }
+  };
+
+  const register = async (userData) => {
+    try {
+      const response = await api.post('/auth/register', userData);
+      
+      if (response.data.success && response.data.token) {
+        const { token, user } = response.data;
+        
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        
+        setUser(user);
+        setIsAuthenticated(true);
+        
+        return { success: true, user };
+      }
+      
+      return { 
+        success: false, 
+        error: response.data.error || 'Registration failed' 
+      };
+    } catch (error) {
+      console.error('Registration error:', error);
+      return { 
+        success: false, 
+        error: error.response?.data?.error || 'Registration failed. Please try again.' 
+      };
     }
   };
 
   const logout = async () => {
     try {
-      await axios.post('/auth/logout');
+      await api.post('/auth/logout');
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      // Clear storage
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      delete axios.defaults.headers.common['Authorization'];
-      
       setUser(null);
       setIsAuthenticated(false);
       
@@ -92,20 +135,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateProfile = async (data) => {
+  const updateProfile = async (updates) => {
     try {
-      const response = await axios.put('/auth/profile', data);
-      const updatedUser = response.data.user;
+      const response = await api.put('/auth/profile', updates);
       
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      setUser(updatedUser);
+      if (response.data.success) {
+        const updatedUser = response.data.user;
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        
+        toast.success('Profile updated successfully');
+        return { success: true, user: updatedUser };
+      }
       
-      toast.success('Profile updated successfully');
-      return { success: true, user: updatedUser };
+      const errorMsg = response.data.error || 'Update failed';
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg };
     } catch (error) {
-      const message = error.response?.data?.error || 'Update failed';
-      toast.error(message);
-      return { success: false, error: message };
+      console.error('Update profile error:', error);
+      const errorMsg = error.response?.data?.error || 'Update failed. Please try again.';
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg };
     }
   };
 
@@ -114,13 +164,10 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     loading,
     login,
+    register,
     logout,
     updateProfile
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

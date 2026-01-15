@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HiBuildingOffice, HiPhone, HiMail, HiLocationMarker } from 'react-icons/hi';
+import { HiOfficeBuilding, HiPhone, HiMail, HiLocationMarker } from 'react-icons/hi';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -12,7 +12,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <HiBuildingOffice className="h-8 w-8 text-primary-400" />
+              <HiOfficeBuilding className="h-8 w-8 text-primary-400" />
               <span className="text-2xl font-bold">
                 Tower<span className="text-primary-400">Space</span>
               </span>

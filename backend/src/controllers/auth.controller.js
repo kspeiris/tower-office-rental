@@ -13,18 +13,17 @@ exports.register = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ 
       $or: [{ email }, { username }] 
     });
 
     if (existingUser) {
       return res.status(400).json({ 
+        success: false,
         error: 'User with this email or username already exists' 
       });
     }
 
-    // Create new user
     const user = new User({
       username,
       email,
@@ -34,71 +33,115 @@ exports.register = async (req, res) => {
 
     await user.save();
 
-    // Generate token
     const token = generateToken(user._id);
 
-    // Update last login
     user.lastLogin = new Date();
     await user.save();
 
     res.status(201).json({
+      success: true,
       message: 'User registered successfully',
       user: user.toJSON(),
       token
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('❌ Register Error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: error.message 
+    });
   }
 };
 
 exports.login = async (req, res) => {
   try {
+    console.log('🔍 Login attempt:', req.body);
     const { email, password } = req.body;
 
     // Find user
-    const user = await User.findOne({ email, isActive: true });
+    const user = await User.findOne({ email });
+    console.log('👤 User found:', user ? 'YES' : 'NO');
+    
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      console.log('❌ User not found for email:', email);
+      return res.status(401).json({ 
+        success: false,
+        error: 'Invalid credentials' 
+      });
+    }
+
+    console.log('🔒 User active status:', user.isActive);
+    if (!user.isActive) {
+      console.log('❌ User is inactive');
+      return res.status(401).json({ 
+        success: false,
+        error: 'Invalid credentials' 
+      });
     }
 
     // Check password
+    console.log('🔑 Checking password...');
     const isPasswordValid = await user.comparePassword(password);
+    console.log('✅ Password valid:', isPasswordValid);
+    
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      console.log('❌ Invalid password');
+      return res.status(401).json({ 
+        success: false,
+        error: 'Invalid credentials' 
+      });
     }
 
     // Generate token
+    console.log('🎫 Generating token...');
     const token = generateToken(user._id);
+    console.log('✅ Token generated');
 
     // Update last login
     user.lastLogin = new Date();
     await user.save();
 
+    console.log('✅ Login successful for:', email);
     res.json({
+      success: true,
       message: 'Login successful',
       user: user.toJSON(),
       token
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('❌ Login Error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: error.message 
+    });
   }
 };
 
 exports.logout = async (req, res) => {
   try {
-    // In a stateless JWT system, client should delete the token
-    // For enhanced security, you could implement a token blacklist
-    res.json({ message: 'Logout successful' });
+    res.json({ 
+      success: true,
+      message: 'Logout successful' 
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ 
+      success: false,
+      error: error.message 
+    });
   }
 };
 
 exports.getProfile = async (req, res) => {
   try {
-    res.json({ user: req.user.toJSON() });
+    res.json({ 
+      success: true,
+      user: req.user.toJSON() 
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ 
+      success: false,
+      error: error.message 
+    });
   }
 };
 
@@ -121,10 +164,14 @@ exports.updateProfile = async (req, res) => {
     );
 
     res.json({
+      success: true,
       message: 'Profile updated successfully',
       user: user.toJSON()
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ 
+      success: false,
+      error: error.message 
+    });
   }
 };

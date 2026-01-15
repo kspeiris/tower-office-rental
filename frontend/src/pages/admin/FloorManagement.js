@@ -7,13 +7,14 @@ import {
   HiEye,
   HiCheckCircle,
   HiXCircle,
-  HiClock
+  HiClock,
+  HiOfficeBuilding
 } from 'react-icons/hi';
 import { floorApi } from '../../services/api';
 import toast from 'react-hot-toast';
-import Modal from '../common/Modal';
-import FloorForm from './FloorForm';
-import LoadingSpinner from '../common/LoadingSpinner';
+import Modal from '../../components/common/Modal';
+import FloorForm from '../../components/admin/FloorForm';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const FloorManagement = () => {
   const [floors, setFloors] = useState([]);
@@ -207,7 +208,7 @@ const FloorManagement = () => {
 
         {!loading && floors.length === 0 && (
           <div className="text-center py-12">
-            <HiBuildingOffice className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <HiOfficeBuilding className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No floors found</h3>
             <p className="text-gray-600 mb-4">Get started by adding your first floor</p>
             <button
