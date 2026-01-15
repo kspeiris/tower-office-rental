@@ -42,9 +42,22 @@ export const floorApi = {
   getAvailable: () => api.get('/floors/available'),
   getFeatured: () => api.get('/floors/featured'),
   getById: (id) => api.get(`/floors/${id}`),
-  create: (data) => api.post('/floors', data),
-  update: (id, data) => api.put(`/floors/${id}`, data),
+  create: (data) => {
+    // Handle FormData for file uploads
+    const config = data instanceof FormData ? {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    } : {};
+    return api.post('/floors', data, config);
+  },
+  update: (id, data) => {
+    // Handle FormData for file uploads
+    const config = data instanceof FormData ? {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    } : {};
+    return api.put(`/floors/${id}`, data, config);
+  },
   delete: (id) => api.delete(`/floors/${id}`),
+  deleteImage: (id, imageUrl) => api.delete(`/floors/${id}/images`, { data: { imageUrl } }),
 };
 
 // Inquiry API

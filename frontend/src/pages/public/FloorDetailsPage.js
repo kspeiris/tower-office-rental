@@ -5,12 +5,14 @@ import { motion } from 'framer-motion';
 import {
   HiArrowLeft,
   HiCheckCircle,
-  HiLocationMarker, // Changed from HiMapPin
+  HiLocationMarker,
   HiArrowsExpand,
   HiUserGroup,
   HiCalendar,
   HiPhone,
-  HiMail
+  HiMail,
+  HiChevronLeft,
+  HiChevronRight
 } from 'react-icons/hi';
 import { floorApi } from '../../services/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -20,6 +22,7 @@ const FloorDetailsPage = () => {
   const { id } = useParams();
   const [floor, setFloor] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     fetchFloorDetails();
@@ -35,6 +38,18 @@ const FloorDetailsPage = () => {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const nextImage = () => {
+    if (floor.images && floor.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % floor.images.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (floor.images && floor.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + floor.images.length) % floor.images.length);
     }
   };
 
@@ -75,11 +90,11 @@ const FloorDetailsPage = () => {
   return (
     <>
       <Helmet>
-  <title>
-    {floor ? `${floor.name} | Floor ${floor.floorNumber} | TowerSpace` : 'Floor Details | TowerSpace'}
-  </title>
-  <meta name="description" content={floor?.description || 'Office space details'} />
-</Helmet>
+        <title>
+          {floor ? `${floor.name} | Floor ${floor.floorNumber} | TowerSpace` : 'Floor Details | TowerSpace'}
+        </title>
+        <meta name="description" content={floor?.description || 'Office space details'} />
+      </Helmet>
 
       <div className="min-h-screen bg-gray-50">
         {/* Back Navigation */}
@@ -94,6 +109,79 @@ const FloorDetailsPage = () => {
             </Link>
           </div>
         </div>
+
+        {/* Image Gallery Section */}
+        {floor.images && floor.images.length > 0 && (
+          <div className="relative bg-black">
+            <div className="max-w-7xl mx-auto">
+              <div className="relative h-96 md:h-[500px]">
+                <img
+                  src={floor.images[currentImageIndex]}
+                  alt={`${floor.name} - Image ${currentImageIndex + 1}`}
+                  className="w-full h-full object-cover"
+                />
+                
+                {floor.images.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-all"
+                    >
+                      <HiChevronLeft className="h-6 w-6 text-gray-800" />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-all"
+                    >
+                      <HiChevronRight className="h-6 w-6 text-gray-800" />
+                    </button>
+                    
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+                      {floor.images.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentImageIndex(index)}
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            index === currentImageIndex
+                              ? 'bg-white w-8'
+                              : 'bg-white/50 hover:bg-white/75'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              
+              {/* Thumbnail strip */}
+              {floor.images.length > 1 && (
+                <div className="bg-gray-900 py-4">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex space-x-2 overflow-x-auto">
+                      {floor.images.map((image, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentImageIndex(index)}
+                          className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                            index === currentImageIndex
+                              ? 'border-white'
+                              : 'border-transparent opacity-60 hover:opacity-100'
+                          }`}
+                        >
+                          <img
+                            src={image}
+                            alt={`Thumbnail ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Hero Section */}
         <div className="relative bg-gradient-to-r from-primary-600 to-primary-800 text-white">

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HiArrowRight, HiCheckCircle, HiXCircle, HiClock } from 'react-icons/hi';
+import { HiArrowRight, HiCheckCircle, HiXCircle, HiClock, HiPhotograph } from 'react-icons/hi';
 
 const FloorCard = ({ floor, viewMode = 'grid' }) => {
   const getStatusIcon = (status) => {
@@ -90,13 +90,24 @@ const FloorCard = ({ floor, viewMode = 'grid' }) => {
   // Grid View
   return (
     <div className="card overflow-hidden group hover:shadow-2xl transition-all duration-300">
-      <div className="relative h-48 bg-gradient-to-br from-primary-500 to-primary-700">
+      <div className="relative h-48 bg-gray-200 overflow-hidden">
+        {floor.images && floor.images.length > 0 ? (
+          <img
+            src={floor.images[0]}
+            alt={floor.name}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center">
+            <HiPhotograph className="h-16 w-16 text-white opacity-50" />
+          </div>
+        )}
         {floor.isFeatured && (
-          <div className="absolute top-4 left-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+          <div className="absolute top-4 left-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
             Featured
           </div>
         )}
-        <div className="absolute top-4 right-4 flex items-center space-x-1 px-3 py-1 rounded-full bg-white/90 backdrop-blur-sm">
+        <div className="absolute top-4 right-4 flex items-center space-x-1 px-3 py-1 rounded-full bg-white/90 backdrop-blur-sm z-10">
           {getStatusIcon(floor.status)}
           <span className="text-sm font-medium">{getStatusText(floor.status)}</span>
         </div>

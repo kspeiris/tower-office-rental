@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { HiX } from 'react-icons/hi';
+import { HiX, HiUpload, HiTrash, HiPhotograph } from 'react-icons/hi';
 import { floorApi } from '../../services/api';
 import toast from 'react-hot-toast';
 
 const FloorForm = ({ floor, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState(floor?.images || []);
+  const [floorPlanFile, setFloorPlanFile] = useState(null);
+  const [floorPlanPreview, setFloorPlanPreview] = useState(floor?.floorPlan || null);
 
   const initialValues = floor ? {
     floorNumber: floor.floorNumber,
@@ -63,23 +67,118 @@ const FloorForm = ({ floor, onSuccess }) => {
       .required('Status is required')
   });
 
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    
+    if (files.length + imagePreviews.length > 5) {
+      toast.error('Maximum 5 images allowed');
+      return;
+    }
+
+    const validFiles = files.filter(file => {
+      const isValidType = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type);
+      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
+      
+      if (!isValidType) {
+        toast.error(`${file.name} is not a valid image type`);
+        return false;
+      }
+      if (!isValidSize) {
+        toast.error(`${file.name} is too large (max 5MB)`);
+        return false;
+      }
+      return true;
+    });
+
+    setImageFiles([...imageFiles, ...validFiles]);
+
+    validFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews(prev => [...prev, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeImage = async (index, isExisting = false) => {
+    if (isExisting && floor) {
+      const imageUrl = imagePreviews[index];
+      try {
+        await floorApi.deleteImage(floor._id, imageUrl);
+        toast.success('Image deleted');
+      } catch (error) {
+        toast.error('Failed to delete image');
+        return;
+      }
+    }
+
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleFloorPlanChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const isValidType = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'].includes(file.type);
+    const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB
+
+    if (!isValidType) {
+      toast.error('Floor plan must be an image or PDF');
+      return;
+    }
+    if (!isValidSize) {
+      toast.error('Floor plan is too large (max 10MB)');
+      return;
+    }
+
+    setFloorPlanFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFloorPlanPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeFloorPlan = () => {
+    setFloorPlanFile(null);
+    setFloorPlanPreview(null);
+  };
+
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       setIsSubmitting(true);
       
-      const floorData = {
-        ...values,
-        area: Number(values.area),
-        pricePerSqFt: Number(values.pricePerSqFt),
-        totalPrice: Number(values.totalPrice),
-        maxCapacity: values.maxCapacity ? Number(values.maxCapacity) : undefined
-      };
+      const formData = new FormData();
+      
+      // Append all form fields
+      Object.keys(values).forEach(key => {
+        if (key === 'amenities') {
+          values[key].forEach(amenity => {
+            formData.append('amenities[]', amenity);
+          });
+        } else {
+          formData.append(key, values[key]);
+        }
+      });
+
+      // Append image files
+      imageFiles.forEach(file => {
+        formData.append('images', file);
+      });
+
+      // Append floor plan file
+      if (floorPlanFile) {
+        formData.append('floorPlan', floorPlanFile);
+      }
 
       if (floor) {
-        await floorApi.update(floor._id, floorData);
+        await floorApi.update(floor._id, formData);
         toast.success('Floor updated successfully');
       } else {
-        await floorApi.create(floorData);
+        await floorApi.create(formData);
         toast.success('Floor created successfully');
       }
 
@@ -175,6 +274,94 @@ const FloorForm = ({ floor, onSuccess }) => {
               />
               <ErrorMessage name="description" component="div" className="mt-1 text-sm text-red-600" />
             </div>
+          </div>
+
+          {/* Image Upload Section */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Floor Images (Max 5)
+            </label>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
+              {imagePreviews.map((preview, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={preview}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg border-2 border-gray-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index, !imageFiles[index])}
+                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <HiTrash className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+              
+              {imagePreviews.length < 5 && (
+                <label className="w-full h-32 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 hover:bg-primary-50 transition-colors">
+                  <HiUpload className="h-8 w-8 text-gray-400 mb-2" />
+                  <span className="text-sm text-gray-500">Upload Image</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
+            <p className="text-sm text-gray-500">
+              Upload up to 5 images (JPEG, PNG, WebP, max 5MB each)
+            </p>
+          </div>
+
+          {/* Floor Plan Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Floor Plan (Optional)
+            </label>
+            
+            {floorPlanPreview ? (
+              <div className="relative inline-block">
+                {floorPlanPreview.includes('pdf') ? (
+                  <div className="w-48 h-32 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-200">
+                    <HiPhotograph className="h-12 w-12 text-gray-400" />
+                    <span className="ml-2 text-sm text-gray-600">PDF File</span>
+                  </div>
+                ) : (
+                  <img
+                    src={floorPlanPreview}
+                    alt="Floor plan preview"
+                    className="w-48 h-32 object-cover rounded-lg border-2 border-gray-200"
+                  />
+                )}
+                <button
+                  type="button"
+                  onClick={removeFloorPlan}
+                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full"
+                >
+                  <HiTrash className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <label className="w-48 h-32 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 hover:bg-primary-50 transition-colors">
+                <HiUpload className="h-8 w-8 text-gray-400 mb-2" />
+                <span className="text-sm text-gray-500">Upload Floor Plan</span>
+                <input
+                  type="file"
+                  accept="image/*,application/pdf"
+                  onChange={handleFloorPlanChange}
+                  className="hidden"
+                />
+              </label>
+            )}
+            <p className="text-sm text-gray-500 mt-2">
+              Upload floor plan (JPEG, PNG, PDF, max 10MB)
+            </p>
           </div>
 
           {/* Size and Pricing */}
