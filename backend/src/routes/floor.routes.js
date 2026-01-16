@@ -3,7 +3,7 @@ const router = express.Router();
 const floorController = require('../controllers/floor.controller');
 const { floorValidations } = require('../middleware/validation');
 const { auth, isAdmin } = require('../middleware/auth');
-const { uploadMultiple } = require('../middleware/upload');
+const { uploadFields } = require('../middleware/upload'); // CHANGED: Use uploadFields instead
 
 // Public routes
 router.get('/', floorController.getAllFloors);
@@ -16,7 +16,7 @@ router.post(
   '/', 
   auth, 
   isAdmin, 
-  uploadMultiple,
+  uploadFields, // CHANGED: Now accepts both 'images' and 'floorPlan'
   floorValidations.create, 
   floorController.createFloor
 );
@@ -25,7 +25,7 @@ router.put(
   '/:id', 
   auth, 
   isAdmin, 
-  uploadMultiple,
+  uploadFields, // CHANGED: Now accepts both 'images' and 'floorPlan'
   floorValidations.update, 
   floorController.updateFloor
 );

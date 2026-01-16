@@ -221,7 +221,7 @@ const InquiryManagement = () => {
 
         {!loading && inquiries.length === 0 && (
           <div className="text-center py-12">
-            <HiInbox className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <HiMail className="h-16 w-16 text-gray-400 mx-auto mb-4" /> {/* FIXED: Changed from HiInbox to HiMail */}
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No inquiries found</h3>
             <p className="text-gray-600">When inquiries are submitted, they will appear here.</p>
           </div>
