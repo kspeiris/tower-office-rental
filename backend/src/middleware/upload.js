@@ -1,61 +1,46 @@
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('../config/cloudinary');
+const path = require('path');
 
-// Configure Cloudinary storage for floor images
-const floorStorage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'tower-office/floors',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-    transformation: [{ width: 1200, height: 800, crop: 'limit' }]
-  }
-});
+// MEMORY STORAGE - Direct to Cloudinary (Cloud-ready, no disk dependency)
+const storage = multer.memoryStorage();
 
-// Configure Cloudinary storage for floor plans
-const floorPlanStorage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'tower-office/floor-plans',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'pdf']
-  }
-});
-
-// File filter for images only
-const imageFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|webp/;
+// File filter - only allow images
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|webp|gif/;
   const mimetype = allowedTypes.test(file.mimetype);
-
-  if (mimetype) {
-    return cb(null, true);
+  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  
+  if (mimetype && extname) {
+    cb(null, true);
   } else {
-    cb(new Error('Only image files (jpeg, jpg, png, webp) are allowed'));
+    cb(new Error('Only image files (jpeg, jpg, png, webp, gif) are allowed!'), false);
   }
 };
 
-// Configure multer with Cloudinary storage
-const uploadFloorImages = multer({
-  storage: floorStorage,
+// Upload configuration
+const upload = multer({
+  storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
+    fileSize: 10 * 1024 * 1024, // 10MB limit for Cloudinary compatibility
   },
-  fileFilter: imageFilter
+  fileFilter: fileFilter,
 });
 
-const uploadFloorPlan = multer({
-  storage: floorPlanStorage,
-  limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit for floor plans
-  }
-});
+// Single file upload
+const uploadSingle = upload.single('image');
 
 // Multiple file upload
-const uploadMultiple = uploadFloorImages.fields([
-  { name: 'images', maxCount: 5 },
+const uploadMultiple = upload.array('images', 10); // Max 10 images
+
+// Fields upload (for different file types)
+const uploadFields = upload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'images', maxCount: 10 },
   { name: 'floorPlan', maxCount: 1 }
 ]);
 
-// Single file upload
-const uploadSingle = uploadFloorImages.single('image');
-
-module.exports = { uploadMultiple, uploadSingle, uploadFloorImages };
+module.exports = { 
+  uploadSingle, 
+  uploadMultiple, 
+  uploadFields 
+};

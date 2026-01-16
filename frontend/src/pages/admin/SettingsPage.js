@@ -10,21 +10,24 @@ import {
   HiOfficeBuilding,
   HiGlobe,
   HiBell,
-  HiSave
+  HiSave,
+  HiPhotograph  // CHANGED FROM HiPhoto
 } from 'react-icons/hi';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import TowerMediaManager from '../../components/admin/TowerMediaManager';
 
 const SettingsPage = () => {
   const { user, updateProfile } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
 
   const tabs = [
-    { id: 'profile', label: 'Profile', icon: <HiUser /> },
-    { id: 'security', label: 'Security', icon: <HiLockClosed /> },
-    { id: 'company', label: 'Company', icon: <HiOfficeBuilding /> },
-    { id: 'notifications', label: 'Notifications', icon: <HiBell /> }
-  ];
+  { id: 'profile', label: 'Profile', icon: <HiUser /> },
+  { id: 'security', label: 'Security', icon: <HiLockClosed /> },
+  { id: 'company', label: 'Company', icon: <HiOfficeBuilding /> },
+  { id: 'notifications', label: 'Notifications', icon: <HiBell /> },
+  { id: 'media', label: 'Tower Media', icon: <HiPhotograph /> }  // CORRECT
+];
 
   const profileValidationSchema = Yup.object({
     username: Yup.string()
@@ -304,6 +307,21 @@ const SettingsPage = () => {
                   Configure how and when you receive notifications.
                 </p>
                 {/* Notification settings would go here */}
+              </motion.div>
+            )}
+
+            {/* Tower Media Settings */}
+            {activeTab === 'media' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="card p-8"
+              >
+                <h2 className="text-xl font-bold text-gray-900 mb-6">Tower Media Management</h2>
+                <p className="text-gray-600 mb-6">
+                  Manage feature images and YouTube videos displayed on the homepage.
+                </p>
+                <TowerMediaManager />
               </motion.div>
             )}
           </div>

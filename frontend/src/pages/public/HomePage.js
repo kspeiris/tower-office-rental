@@ -24,288 +24,21 @@ import {
   HiBuildingLibrary,
   HiCpuChip,
   HiCloudArrowUp,
-  HiHomeModern,
-  HiXMark,
-  HiArrowsPointingOut,
-  HiComputerDesktop,
-  HiDevicePhoneMobile,
-  HiPause,
-  HiForward,
-  HiBackward
+  HiHomeModern
 } from 'react-icons/hi2';
-import { floorApi, adminApi } from '../../services/api';
+import { HiPhotograph } from 'react-icons/hi';  // FIXED: Added HiPhotograph from hi
+import { floorApi, adminApi, towerApi } from '../../services/api';
 import FloorCard from '../../components/public/FloorCard';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-
-// Virtual Tour Modal Component
-const VirtualTourModal = ({ isOpen, onClose }) => {
-  const [tourStep, setTourStep] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-  
-  const tourSteps = [
-    {
-      title: "Grand Lobby",
-      description: "Experience our luxurious entrance with premium finishes",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual 360° video
-      imageUrl: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80"
-    },
-    {
-      title: "Executive Suites",
-      description: "Explore our premium office spaces with panoramic views",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual 360° video
-      imageUrl: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-    },
-    {
-      title: "Conference Facilities",
-      description: "Discover our state-of-the-art meeting rooms",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual 360° video
-      imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80"
-    },
-    {
-      title: "Amenities Floor",
-      description: "Tour our fitness center, cafeteria, and lounge areas",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual 360° video
-      imageUrl: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-    }
-  ];
-
-  const nextStep = () => {
-    setTourStep((prev) => (prev + 1) % tourSteps.length);
-  };
-
-  const prevStep = () => {
-    setTourStep((prev) => (prev - 1 + tourSteps.length) % tourSteps.length);
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
-      >
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0, y: 20 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          transition={{ type: "spring", damping: 25 }}
-          className="relative w-full max-w-6xl bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl overflow-hidden shadow-2xl"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-white/10">
-            <div>
-              <h2 className="text-2xl font-bold text-white">
-                JFI Tower 3 Virtual Tour
-              </h2>
-              <p className="text-gray-400">Experience our premium spaces in 360°</p>
-            </div>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-full hover:bg-white/10 transition-colors"
-            >
-              <HiXMark className="h-6 w-6 text-white" />
-            </button>
-          </div>
-
-          {/* Tour Content */}
-          <div className="p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Tour Display */}
-              <div className="lg:col-span-2">
-                <div className="relative rounded-2xl overflow-hidden bg-black aspect-video">
-                  {/* Video/360° Viewer */}
-                  {isPlaying ? (
-                    <iframe
-                      src={tourSteps[tourStep].videoUrl}
-                      title="Virtual Tour"
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <div className="relative w-full h-full">
-                      <img
-                        src={tourSteps[tourStep].imageUrl}
-                        alt={tourSteps[tourStep].title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-8">
-                        <div>
-                          <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-3">
-                            <span className="text-sm text-white">360° View Available</span>
-                          </div>
-                          <h3 className="text-2xl font-bold text-white mb-2">{tourSteps[tourStep].title}</h3>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Video Controls */}
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2">
-                    <button
-                      onClick={prevStep}
-                      className="p-2 hover:bg-white/10 rounded-full transition-colors"
-                    >
-                      <HiBackward className="h-5 w-5 text-white" />
-                    </button>
-                    <button
-                      onClick={() => setIsPlaying(!isPlaying)}
-                      className="p-2 hover:bg-white/10 rounded-full transition-colors"
-                    >
-                      {isPlaying ? (
-                        <HiPause className="h-5 w-5 text-white" />
-                      ) : (
-                        <HiPlayCircle className="h-5 w-5 text-white" />
-                      )}
-                    </button>
-                    <button
-                      onClick={nextStep}
-                      className="p-2 hover:bg-white/10 rounded-full transition-colors"
-                    >
-                      <HiForward className="h-5 w-5 text-white" />
-                    </button>
-                  </div>
-                </div>
-                
-                {/* Tour Navigation */}
-                <div className="flex justify-between items-center mt-6">
-                  <button
-                    onClick={prevStep}
-                    className="flex items-center text-white hover:text-cyan-300 transition-colors"
-                  >
-                    <HiChevronLeft className="h-5 w-5 mr-2" />
-                    Previous
-                  </button>
-                  
-                  <div className="flex space-x-2">
-                    {tourSteps.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setTourStep(index)}
-                        className={`w-3 h-3 rounded-full transition-all ${
-                          index === tourStep 
-                            ? 'bg-cyan-400' 
-                            : 'bg-gray-600 hover:bg-gray-500'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  
-                  <button
-                    onClick={nextStep}
-                    className="flex items-center text-white hover:text-cyan-300 transition-colors"
-                  >
-                    Next
-                    <HiChevronRight className="h-5 w-5 ml-2" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Tour Info Panel */}
-              <div className="space-y-6">
-                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-                  <h3 className="text-xl font-bold text-white mb-4">Tour Features</h3>
-                  <ul className="space-y-3">
-                    <li className="flex items-center text-gray-300">
-                      <HiCheckCircle className="h-5 w-5 text-cyan-400 mr-3" />
-                      <span>360° Interactive Views</span>
-                    </li>
-                    <li className="flex items-center text-gray-300">
-                      <HiCheckCircle className="h-5 w-5 text-cyan-400 mr-3" />
-                      <span>HD Quality Streaming</span>
-                    </li>
-                    <li className="flex items-center text-gray-300">
-                      <HiCheckCircle className="h-5 w-5 text-cyan-400 mr-3" />
-                      <span>Floor-by-Floor Exploration</span>
-                    </li>
-                    <li className="flex items-center text-gray-300">
-                      <HiCheckCircle className="h-5 w-5 text-cyan-400 mr-3" />
-                      <span>Mobile & Desktop Compatible</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-                  <h3 className="text-xl font-bold text-white mb-4">Current Location</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="text-2xl font-bold text-white mb-2">
-                        {tourSteps[tourStep].title}
-                      </div>
-                      <p className="text-gray-300">
-                        {tourSteps[tourStep].description}
-                      </p>
-                    </div>
-                    <div className="flex items-center text-gray-400">
-                      <HiMapPin className="h-5 w-5 mr-2" />
-                      <span>Floor {tourStep + 1} • JFI Tower 3</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 backdrop-blur-sm rounded-2xl p-6 border border-cyan-500/20">
-                  <h3 className="text-xl font-bold text-white mb-4">Want to See More?</h3>
-                  <p className="text-gray-300 mb-4">
-                    Schedule a personalized in-person tour for the full experience.
-                  </p>
-                  <button
-                    onClick={() => {
-                      onClose();
-                      window.location.href = '/contact';
-                    }}
-                    className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-xl hover:from-cyan-600 hover:to-blue-600 transition-all"
-                  >
-                    Schedule In-Person Tour
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="p-6 border-t border-white/10 bg-black/20">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center text-gray-400">
-                  <HiComputerDesktop className="h-5 w-5 mr-2" />
-                  <span>Desktop Compatible</span>
-                </div>
-                <div className="flex items-center text-gray-400">
-                  <HiDevicePhoneMobile className="h-5 w-5 mr-2" />
-                  <span>Mobile Optimized</span>
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  const iframe = document.querySelector('iframe');
-                  if (iframe) {
-                    iframe.requestFullscreen();
-                  }
-                }}
-                className="flex items-center text-cyan-400 hover:text-cyan-300 transition-colors"
-              >
-                <HiArrowsPointingOut className="h-5 w-5 mr-2" />
-                Fullscreen
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
-};
+import TowerGallery from '../../components/public/TowerGallery';
+import VideoShowcase from '../../components/public/VideoShowcase';
 
 const HomePage = () => {
   const [featuredFloors, setFeaturedFloors] = useState([]);
   const [dashboardStats, setDashboardStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
-  const [isVirtualTourOpen, setIsVirtualTourOpen] = useState(false);
+  const [towerData, setTowerData] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -319,12 +52,14 @@ const HomePage = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [floorsResponse, statsResponse] = await Promise.all([
+      const [floorsResponse, statsResponse, towerResponse] = await Promise.all([
         floorApi.getFeatured(),
-        adminApi.getDashboardStats()
+        adminApi.getDashboardStats(),
+        towerApi.getInfo()
       ]);
       setFeaturedFloors(floorsResponse.data.floors || []);
       setDashboardStats(statsResponse.data);
+      setTowerData(towerResponse.data.towerInfo || {});
     } catch (error) {
       console.error('Error fetching data:', error);
       setDashboardStats({
@@ -439,12 +174,6 @@ const HomePage = () => {
         <meta name="description" content="JFI Tower 3 offers premium Grade A office spaces with world-class amenities in the heart of the business district. Experience luxury, innovation, and productivity." />
       </Helmet>
 
-      {/* Virtual Tour Modal */}
-      <VirtualTourModal 
-        isOpen={isVirtualTourOpen} 
-        onClose={() => setIsVirtualTourOpen(false)} 
-      />
-
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
@@ -504,14 +233,13 @@ const HomePage = () => {
                 <HiArrowRightCircle className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </button>
               
-              {/* UPDATED: Virtual Tour Button now opens the modal */}
               <button
-                onClick={() => setIsVirtualTourOpen(true)}
+                onClick={() => navigate('/contact')}
                 className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-300"
               >
                 <span className="flex items-center">
-                  <HiPlayCircle className="mr-3 h-6 w-6" />
-                  Virtual Tour
+                  <HiMapPin className="mr-3 h-6 w-6" />
+                  Schedule Tour
                 </span>
               </button>
             </div>
@@ -519,8 +247,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Rest of the HomePage remains the same... */}
-      {/* Tower Stats, Features, Featured Floors, Amenities, CTA sections */}
+      {/* Tower Stats */}
       <section className="py-12 bg-gradient-to-b from-gray-900 to-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -713,6 +440,50 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* Tower Gallery Section */}
+      {towerData?.featureImages?.length > 0 && (
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 mb-4">
+                <HiPhotograph className="h-4 w-4 mr-2" /> {/* FIXED: Changed from HiPhoto to HiPhotograph */}
+                <span className="text-sm font-semibold">TOWER GALLERY</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Explore Our <span className="text-blue-600">Premium</span> Spaces
+              </h2>
+              <p className="text-gray-600 text-lg max-w-3xl mx-auto">
+                Take a visual tour through our state-of-the-art facilities and modern workspaces
+              </p>
+            </div>
+
+            <TowerGallery images={towerData.featureImages} />
+          </div>
+        </section>
+      )}
+
+      {/* Video Showcase Section */}
+      {towerData?.youtubeVideos?.length > 0 && (
+        <section className="py-20 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-red-100 to-orange-100 text-red-700 mb-4">
+                <HiPlayCircle className="h-4 w-4 mr-2" />
+                <span className="text-sm font-semibold">VIDEO TOURS</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Experience the <span className="text-blue-600">Virtual</span> Tour
+              </h2>
+              <p className="text-gray-600 text-lg max-w-3xl mx-auto">
+                Watch our comprehensive video tours and see what makes JFI Tower 3 exceptional
+              </p>
+            </div>
+
+            <VideoShowcase videos={towerData.youtubeVideos} />
+          </div>
+        </section>
+      )}
+
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-50 to-cyan-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -737,10 +508,10 @@ const HomePage = () => {
                 <HiArrowRightCircle className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
               </button>
               <button
-                onClick={() => setIsVirtualTourOpen(true)}
+                onClick={() => navigate('/contact')}
                 className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-300"
               >
-                Experience Virtual Tour
+                Schedule a Tour
               </button>
             </div>
           </motion.div>

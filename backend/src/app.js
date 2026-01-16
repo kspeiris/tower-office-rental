@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth.routes');
 const floorRoutes = require('./routes/floor.routes');
 const inquiryRoutes = require('./routes/inquiry.routes');
 const adminRoutes = require('./routes/admin.routes');
+const towerRoutes = require('./routes/tower.routes'); // ADD THIS LINE
 
 const app = express();
 
@@ -54,6 +55,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/floors', floorRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/tower', towerRoutes); // ADD THIS LINE
 
 // Health check
 app.get('/api/health', (req, res) => {

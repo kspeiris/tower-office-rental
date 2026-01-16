@@ -27,11 +27,12 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // FIXED: Removed /virtual-tour route that doesn't exist
   const navItems = [
     { path: '/', label: 'Home', icon: HiBuildingOffice },
     { path: '/floors', label: 'Floor Plans', icon: HiMapPin },
     { path: '/amenities', label: 'Amenities', icon: HiCalendar },
-    { path: '/virtual-tour', label: 'Virtual Tour' },
+    // REMOVED: { path: '/virtual-tour', label: 'Virtual Tour' },
     { path: '/contact', label: 'Contact', icon: HiPhone },
   ];
 
@@ -93,9 +94,9 @@ const Navbar = () => {
               );
             })}
 
-            {/* CTA Button */}
+            {/* CTA Button - FIXED: Changed from /schedule-tour to /contact */}
             <button
-              onClick={() => navigate('/schedule-tour')}
+              onClick={() => navigate('/contact')}
               className="ml-4 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-cyan-600 transition-all duration-200 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl active:scale-95"
             >
               Schedule Tour
@@ -158,7 +159,7 @@ const Navbar = () => {
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center space-x-4">
             <button
-              onClick={() => navigate('/schedule-tour')}
+              onClick={() => navigate('/contact')}  // FIXED: Changed from /schedule-tour to /contact
               className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-sm font-semibold rounded-lg hover:from-blue-700 hover:to-cyan-600 transition-all shadow-lg"
             >
               Tour

@@ -74,6 +74,22 @@ export const adminApi = {
   getDashboardStats: () => api.get('/admin/dashboard/stats'),
 };
 
+// Tower API
+export const towerApi = {
+  getInfo: () => api.get('/tower'),
+  updateInfo: (data) => api.put('/tower', data),
+  
+  // Feature Images
+  uploadFeatureImage: (formData) => api.post('/tower/feature-images', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
+  deleteFeatureImage: (publicId) => api.delete('/tower/feature-images', { data: { publicId } }),
+  
+  // YouTube Videos
+  addYoutubeVideo: (data) => api.post('/tower/youtube-videos', data),
+  deleteYoutubeVideo: (videoId) => api.delete('/tower/youtube-videos', { data: { videoId } })
+};
+
 // Auth API
 export const authApi = {
   login: (data) => api.post('/auth/login', data),
