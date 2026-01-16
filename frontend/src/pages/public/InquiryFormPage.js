@@ -53,24 +53,25 @@ const InquiryFormPage = () => {
   const validationSchema = Yup.object({
     name: Yup.string()
       .required('Name is required')
-      .min(2, 'Name is too short')
-      .max(100, 'Name is too long'),
+      .min(2, 'Name must be at least 2 characters')
+      .max(100, 'Name must be less than 100 characters'),
     email: Yup.string()
       .email('Invalid email address')
       .required('Email is required'),
     phone: Yup.string()
       .required('Phone number is required')
-      .matches(/^[\+]?[1-9][\d]{0,15}$/, 'Invalid phone number'),
+      .matches(/^[\d\s\-\+\(\)]+$/, 'Phone number is not valid'),
     company: Yup.string()
-      .max(200, 'Company name is too long'),
+      .max(200, 'Company name must be less than 200 characters'),
     message: Yup.string()
       .required('Message is required')
-      .max(1000, 'Message is too long'),
+      .min(10, 'Message must be at least 10 characters')
+      .max(1000, 'Message must be less than 1000 characters'),
     budget: Yup.number()
-      .min(0, 'Budget cannot be negative')
-      .max(1000000, 'Budget is too high'),
+      .positive('Budget must be a positive number')
+      .max(10000000, 'Budget exceeds maximum allowed'),
     moveInDate: Yup.date()
-      .min(new Date(), 'Move-in date must be in the future')
+      .min(new Date().toISOString().split('T')[0], 'Move-in date must be in the future')
   });
 
   const handleSubmit = async (values, { resetForm }) => {
@@ -122,9 +123,9 @@ const InquiryFormPage = () => {
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <Link
               to={`/floors/${floorId}`}
-              className="inline-flex items-center text-primary-600 hover:text-primary-700 mb-6"
+              className="inline-flex items-center text-primary-600 hover:text-primary-700 mb-6 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded px-2 py-1"
             >
-              <HiArrowLeft className="mr-2 h-5 w-5" />
+              <HiArrowLeft className="mr-2 h-5 w-5" aria-hidden="true" />
               Back to floor details
             </Link>
             
@@ -159,55 +160,66 @@ const InquiryFormPage = () => {
                         <h3 className="text-lg font-semibold mb-4">Personal Information</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                               Full Name *
                             </label>
                             <Field
                               type="text"
+                              id="name"
                               name="name"
                               className="input-field"
                               placeholder="John Doe"
+                              aria-required="true"
+                              aria-describedby="name-error"
                             />
-                            <ErrorMessage name="name" component="div" className="mt-1 text-sm text-red-600" />
+                            <ErrorMessage name="name" component="div" id="name-error" className="mt-1 text-sm text-red-600" role="alert" />
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                               Email Address *
                             </label>
                             <Field
                               type="email"
+                              id="email"
                               name="email"
                               className="input-field"
                               placeholder="john@example.com"
+                              aria-required="true"
+                              aria-describedby="email-error"
                             />
-                            <ErrorMessage name="email" component="div" className="mt-1 text-sm text-red-600" />
+                            <ErrorMessage name="email" component="div" id="email-error" className="mt-1 text-sm text-red-600" role="alert" />
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
                               Phone Number *
                             </label>
                             <Field
                               type="tel"
+                              id="phone"
                               name="phone"
                               className="input-field"
                               placeholder="+1 (555) 123-4567"
+                              aria-required="true"
+                              aria-describedby="phone-error"
                             />
-                            <ErrorMessage name="phone" component="div" className="mt-1 text-sm text-red-600" />
+                            <ErrorMessage name="phone" component="div" id="phone-error" className="mt-1 text-sm text-red-600" role="alert" />
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
                               Company
                             </label>
                             <Field
                               type="text"
+                              id="company"
                               name="company"
                               className="input-field"
                               placeholder="ACME Corporation"
+                              aria-describedby="company-error"
                             />
-                            <ErrorMessage name="company" component="div" className="mt-1 text-sm text-red-600" />
+                            <ErrorMessage name="company" component="div" id="company-error" className="mt-1 text-sm text-red-600" role="alert" />
                           </div>
                         </div>
                       </div>
@@ -217,25 +229,35 @@ const InquiryFormPage = () => {
                         <h3 className="text-lg font-semibold mb-4">Inquiry Details</h3>
                         
                         <div className="mb-6">
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Message *
-                          </label>
+                          <div className="flex justify-between items-center mb-1">
+                            <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+                              Message *
+                            </label>
+                            <span className="text-xs text-gray-500" aria-live="polite">
+                              {values.message?.length || 0} / 1000
+                            </span>
+                          </div>
                           <Field
                             as="textarea"
+                            id="message"
                             name="message"
                             rows="4"
                             className="input-field"
+                            aria-required="true"
+                            aria-describedby="message-error message-count"
+                            maxLength={1000}
                           />
-                          <ErrorMessage name="message" component="div" className="mt-1 text-sm text-red-600" />
+                          <ErrorMessage name="message" component="div" id="message-error" className="mt-1 text-sm text-red-600" role="alert" />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="preferredContact" className="block text-sm font-medium text-gray-700 mb-1">
                               Preferred Contact
                             </label>
                             <Field
                               as="select"
+                              id="preferredContact"
                               name="preferredContact"
                               className="input-field"
                             >
@@ -246,45 +268,54 @@ const InquiryFormPage = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-1">
                               Budget ($)
                             </label>
                             <Field
                               type="number"
+                              id="budget"
                               name="budget"
                               className="input-field"
                               placeholder="Optional"
+                              min="0"
+                              step="1000"
+                              aria-describedby="budget-error"
                             />
-                            <ErrorMessage name="budget" component="div" className="mt-1 text-sm text-red-600" />
+                            <ErrorMessage name="budget" component="div" id="budget-error" className="mt-1 text-sm text-red-600" role="alert" />
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="moveInDate" className="block text-sm font-medium text-gray-700 mb-1">
                               Desired Move-in Date
                             </label>
                             <Field
                               type="date"
+                              id="moveInDate"
                               name="moveInDate"
                               className="input-field"
+                              min={new Date().toISOString().split('T')[0]}
+                              aria-describedby="moveInDate-error"
                             />
-                            <ErrorMessage name="moveInDate" component="div" className="mt-1 text-sm text-red-600" />
+                            <ErrorMessage name="moveInDate" component="div" id="moveInDate-error" className="mt-1 text-sm text-red-600" role="alert" />
                           </div>
                         </div>
                       </div>
 
                       {/* Additional Notes */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="additionalNotes" className="block text-sm font-medium text-gray-700 mb-1">
                           Additional Notes
                         </label>
                         <Field
                           as="textarea"
+                          id="additionalNotes"
                           name="additionalNotes"
                           rows="3"
                           className="input-field"
                           placeholder="Any special requirements or questions..."
+                          aria-describedby="additionalNotes-error"
                         />
-                        <ErrorMessage name="additionalNotes" component="div" className="mt-1 text-sm text-red-600" />
+                        <ErrorMessage name="additionalNotes" component="div" id="additionalNotes-error" className="mt-1 text-sm text-red-600" role="alert" />
                       </div>
 
                       {/* Submit Button */}
@@ -292,9 +323,20 @@ const InquiryFormPage = () => {
                         <button
                           type="submit"
                           disabled={isSubmitting}
-                          className="w-full btn-primary py-3 text-lg"
+                          className="w-full btn-primary py-3 text-lg disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                          aria-busy={isSubmitting}
                         >
-                          {isSubmitting ? 'Submitting...' : 'Submit Inquiry'}
+                          {isSubmitting ? (
+                            <span className="flex items-center justify-center">
+                              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Submitting...
+                            </span>
+                          ) : (
+                            'Submit Inquiry'
+                          )}
                         </button>
                         <p className="mt-3 text-sm text-gray-600 text-center">
                           By submitting this form, you agree to our Privacy Policy and Terms of Service.

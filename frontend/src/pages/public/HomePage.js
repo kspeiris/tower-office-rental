@@ -40,39 +40,9 @@ const HomePage = () => {
   const [activeImage, setActiveImage] = useState(0);
   const [towerData, setTowerData] = useState(null);
   const navigate = useNavigate();
+  const [isCarouselPaused, setIsCarouselPaused] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-    const interval = setInterval(() => {
-      setActiveImage((prev) => (prev + 1) % towerImages.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [floorsResponse, statsResponse, towerResponse] = await Promise.all([
-        floorApi.getFeatured(),
-        adminApi.getDashboardStats(),
-        towerApi.getInfo()
-      ]);
-      setFeaturedFloors(floorsResponse.data.floors || []);
-      setDashboardStats(statsResponse.data);
-      setTowerData(towerResponse.data.towerInfo || {});
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setDashboardStats({
-        totalFloors: 25,
-        availableFloors: 8,
-        occupancyRate: 92,
-        totalInquiries: 156
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Define all constants FIRST
   const towerImages = [
     {
       id: 1,
@@ -167,6 +137,64 @@ const HomePage = () => {
     { icon: <HiViewfinderCircle />, label: 'Virtual Tours', detail: '3D immersive experiences' }
   ];
 
+  // useEffect hooks
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (!isCarouselPaused) {
+      const interval = setInterval(() => {
+        setActiveImage((prev) => (prev + 1) % towerImages.length);
+      }, 6000);
+      return () => clearInterval(interval);
+    }
+  }, [isCarouselPaused, towerImages.length]);
+
+  // Functions
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [floorsResponse, statsResponse, towerResponse] = await Promise.all([
+        floorApi.getFeatured(),
+        adminApi.getDashboardStats(),
+        towerApi.getInfo()
+      ]);
+      setFeaturedFloors(floorsResponse.data.floors || []);
+      setDashboardStats(statsResponse.data);
+      setTowerData(towerResponse.data.towerInfo || {});
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setDashboardStats({
+        totalFloors: 25,
+        availableFloors: 8,
+        occupancyRate: 92,
+        totalInquiries: 156
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const nextSlide = () => {
+    setActiveImage((prev) => (prev + 1) % towerImages.length);
+  };
+
+  const prevSlide = () => {
+    setActiveImage((prev) => (prev - 1 + towerImages.length) % towerImages.length);
+  };
+
+  const handleCarouselKeyboard = (e) => {
+    if (e.key === 'ArrowLeft') {
+      prevSlide();
+    } else if (e.key === 'ArrowRight') {
+      nextSlide();
+    } else if (e.key === ' ') {
+      e.preventDefault();
+      setIsCarouselPaused(!isCarouselPaused);
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -175,7 +203,16 @@ const HomePage = () => {
       </Helmet>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section 
+        className="relative min-h-screen flex items-center justify-center overflow-hidden" 
+        onKeyDown={handleCarouselKeyboard}
+        tabIndex={0}
+        role="region"
+        aria-label="Hero carousel"
+        aria-live="polite"
+        onMouseEnter={() => setIsCarouselPaused(true)}
+        onMouseLeave={() => setIsCarouselPaused(false)}
+      >
         <div className="absolute inset-0">
           <AnimatePresence mode="wait">
             <motion.div
@@ -189,14 +226,62 @@ const HomePage = () => {
               <div className="relative w-full h-full">
                 <img
                   src={towerImages[activeImage].url}
-                  alt={towerImages[activeImage].title}
+                  alt={`${towerImages[activeImage].title} - ${towerImages[activeImage].description}`}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
               </div>
             </motion.div>
           </AnimatePresence>
+
+          {/* Carousel Controls */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center space-x-4">
+            <button
+              onClick={prevSlide}
+              className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+              aria-label="Previous image"
+            >
+              <HiChevronLeft className="h-6 w-6 text-white" aria-hidden="true" />
+            </button>
+            
+            <div className="flex space-x-2">
+              {towerImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveImage(index)}
+                  className={`w-2 h-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-white ${
+                    index === activeImage ? 'bg-white w-8' : 'bg-white/50 hover:bg-white/75'
+                  }`}
+                  aria-label={`View slide ${index + 1}`}
+                  aria-current={index === activeImage ? 'true' : 'false'}
+                />
+              ))}
+            </div>
+
+            <button
+              onClick={nextSlide}
+              className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+              aria-label="Next image"
+            >
+              <HiChevronRight className="h-6 w-6 text-white" aria-hidden="true" />
+            </button>
+
+            <button
+              onClick={() => setIsCarouselPaused(!isCarouselPaused)}
+              className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+              aria-label={isCarouselPaused ? 'Play carousel' : 'Pause carousel'}
+            >
+              {isCarouselPaused ? (
+                <HiPlayCircle className="h-6 w-6 text-white" aria-hidden="true" />
+              ) : (
+                <svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -207,7 +292,7 @@ const HomePage = () => {
             className="text-white"
           >
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
-              <HiStar className="h-4 w-4 text-yellow-300 mr-2" />
+              <HiStar className="h-4 w-4 text-yellow-300 mr-2" aria-hidden="true" />
               <span className="text-sm font-medium">Premium Grade A Building</span>
             </div>
             
@@ -227,18 +312,18 @@ const HomePage = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => navigate('/floors')}
-                className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-1 shadow-2xl shadow-blue-500/25 flex items-center justify-center"
+                className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-1 shadow-2xl shadow-blue-500/25 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2"
               >
                 <span>Explore Available Spaces</span>
-                <HiArrowRightCircle className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
+                <HiArrowRightCircle className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
               </button>
               
               <button
                 onClick={() => navigate('/contact')}
-                className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-300"
+                className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900"
               >
                 <span className="flex items-center">
-                  <HiMapPin className="mr-3 h-6 w-6" />
+                  <HiMapPin className="mr-3 h-6 w-6" aria-hidden="true" />
                   Schedule Tour
                 </span>
               </button>
@@ -259,7 +344,7 @@ const HomePage = () => {
                 transition={{ delay: index * 0.1 }}
                 className="text-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
               >
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white mb-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white mb-4" aria-hidden="true">
                   {stat.icon}
                 </div>
                 <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
@@ -299,7 +384,7 @@ const HomePage = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white to-gray-50 rounded-3xl shadow-lg group-hover:shadow-2xl transition-all duration-300"></div>
                 <div className="relative p-8 rounded-3xl border border-gray-200 bg-white">
-                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.gradient} text-white mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.gradient} text-white mb-6 group-hover:scale-110 transition-transform duration-300`} aria-hidden="true">
                     {feature.icon}
                   </div>
                   <div className="text-lg font-bold text-gray-900 mb-2">{feature.title}</div>
@@ -328,10 +413,10 @@ const HomePage = () => {
             </div>
             <Link
               to="/floors"
-              className="group mt-4 md:mt-0 inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold"
+              className="group mt-4 md:mt-0 inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1"
             >
               View all available spaces
-              <HiArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform" />
+              <HiArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform" aria-hidden="true" />
             </Link>
           </div>
 
@@ -501,15 +586,15 @@ const HomePage = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={() => navigate('/contact')}
-                className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 transform hover:-translate-y-1 shadow-xl flex items-center justify-center"
+                onClick={() => navigate('/floors')}
+                className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 transform hover:-translate-y-1 shadow-xl flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
-                Request Proposal
-                <HiArrowRightCircle className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
+                View Available Spaces
+                <HiArrowRightCircle className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" aria-hidden="true" />
               </button>
               <button
                 onClick={() => navigate('/contact')}
-                className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-300"
+                className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Schedule a Tour
               </button>

@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import {
   HiWifi,
   HiShieldCheck,
   HiTruck,
-  HiFire, // Changed from HiCoffee
+  HiSparkles,
+  HiHeart,
   HiDesktopComputer,
   HiPhone,
   HiLockClosed,
@@ -14,6 +15,8 @@ import {
 } from 'react-icons/hi';
 
 const AmenitiesPage = () => {
+  const [selectedCategory, setSelectedCategory] = useState('All');
+
   const amenities = [
     {
       icon: <HiWifi className="h-8 w-8" />,
@@ -34,13 +37,13 @@ const AmenitiesPage = () => {
       category: 'Convenience'
     },
     {
-      icon: <HiFire className="h-8 w-8" />, // Changed icon
+      icon: <HiSparkles className="h-8 w-8" />,
       title: 'Executive Lounge',
       description: 'Premium lounge area with complimentary coffee, tea, and refreshments.',
       category: 'Hospitality'
     },
     {
-      icon: <HiFire className="h-8 w-8" />,
+      icon: <HiHeart className="h-8 w-8" />,
       title: 'Fitness Center',
       description: 'State-of-the-art gym with personal trainers, yoga studio, and locker rooms.',
       category: 'Wellness'
@@ -79,6 +82,10 @@ const AmenitiesPage = () => {
 
   const categories = ['All', 'Technology', 'Security', 'Convenience', 'Hospitality', 'Wellness', 'Business', 'Services', 'Community'];
 
+  const filteredAmenities = selectedCategory === 'All' 
+    ? amenities 
+    : amenities.filter(amenity => amenity.category === selectedCategory);
+
   return (
     <>
       <Helmet>
@@ -112,7 +119,14 @@ const AmenitiesPage = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className="px-4 py-2 rounded-full border border-gray-300 hover:border-primary-600 hover:text-primary-600 transition-colors"
+                onClick={() => setSelectedCategory(category)}
+                aria-pressed={selectedCategory === category}
+                aria-label={`Filter by ${category}`}
+                className={`px-4 py-2 rounded-full border transition-colors ${
+                  selectedCategory === category
+                    ? 'border-primary-600 bg-primary-600 text-white'
+                    : 'border-gray-300 hover:border-primary-600 hover:text-primary-600'
+                }`}
               >
                 {category}
               </motion.button>
@@ -125,7 +139,7 @@ const AmenitiesPage = () => {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {amenities.map((amenity, index) => (
+            {filteredAmenities.map((amenity, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -134,7 +148,7 @@ const AmenitiesPage = () => {
                 whileHover={{ y: -5 }}
                 className="card p-8"
               >
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-primary-100 text-primary-600 mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-primary-100 text-primary-600 mb-6" aria-hidden="true">
                   {amenity.icon}
                 </div>
                 <div className="mb-2">
@@ -190,7 +204,10 @@ const AmenitiesPage = () => {
               <p className="mb-6">
                 Schedule a tour to experience our world-class amenities firsthand and see how TowerSpace can elevate your business.
               </p>
-              <button className="w-full px-6 py-3 bg-white text-primary-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors">
+              <button 
+                onClick={() => window.location.href = '/contact'}
+                className="w-full px-6 py-3 bg-white text-primary-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600"
+              >
                 Schedule a Tour
               </button>
             </motion.div>

@@ -14,10 +14,27 @@ import { floorApi } from '../../services/api';
 import FloorCard from '../../components/public/FloorCard';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 
+// Custom debounce hook
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
 const FloorsPage = () => {
   const [floors, setFloors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [filters, setFilters] = useState({
     status: '',
     minPrice: '',
@@ -38,7 +55,7 @@ const FloorsPage = () => {
 
   useEffect(() => {
     fetchFloors();
-  }, [filters, pagination.page]);
+  }, [filters, pagination.page, debouncedSearchTerm]);
 
   const fetchFloors = async () => {
     try {
@@ -47,7 +64,7 @@ const FloorsPage = () => {
         ...filters,
         page: pagination.page,
         limit: pagination.limit,
-        ...(searchTerm && { search: searchTerm })
+        ...(debouncedSearchTerm && { search: debouncedSearchTerm })
       };
       
       const response = await floorApi.getAll(params);
@@ -65,10 +82,7 @@ const FloorsPage = () => {
     setPagination(prev => ({ ...prev, page: 1 }));
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    fetchFloors();
-  };
+  
 
   const clearFilters = () => {
     setFilters({
@@ -101,7 +115,9 @@ const FloorsPage = () => {
     { value: 'area:desc', label: 'Area (Large to Small)' }
   ];
 
-  const hasActiveFilters = Object.values(filters).some(value => value !== '') || searchTerm;
+  const activeFiltersCount = Object.entries(filters)
+    .filter(([key, value]) => key !== 'sortBy' && key !== 'sortOrder' && value !== '')
+    .length + (searchTerm ? 1 : 0);
 
   return (
     <>
@@ -125,34 +141,39 @@ const FloorsPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="flex-1 max-w-2xl">
+            <div className="flex-1 max-w-2xl">
               <div className="relative">
-                <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" aria-hidden="true" />
                 <input
                   type="text"
                   placeholder="Search by floor number, name, or amenities..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  aria-label="Search office spaces"
                 />
               </div>
-            </form>
+            </div>
 
             {/* Controls */}
             <div className="flex items-center space-x-4">
               {/* View Toggle */}
-              <div className="hidden md:flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
+              <div className="hidden md:flex items-center space-x-1 bg-gray-100 rounded-lg p-1" role="group" aria-label="View mode">
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow' : ''}`}
+                  aria-label="Grid view"
+                  aria-pressed={viewMode === 'grid'}
                 >
-                  <HiViewGrid className="h-5 w-5" />
+                  <HiViewGrid className="h-5 w-5" aria-hidden="true" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
                   className={`p-2 rounded ${viewMode === 'list' ? 'bg-white shadow' : ''}`}
+                  aria-label="List view"
+                  aria-pressed={viewMode === 'list'}
                 >
-                  <HiViewList className="h-5 w-5" />
+                  <HiViewList className="h-5 w-5" aria-hidden="true" />
                 </button>
               </div>
 
@@ -180,9 +201,9 @@ const FloorsPage = () => {
               >
                 <HiFilter className="h-5 w-5" />
                 <span>Filters</span>
-                {hasActiveFilters && (
+                {activeFiltersCount > 0 && (
                   <span className="bg-white text-primary-600 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    !
+                    {activeFiltersCount}
                   </span>
                 )}
               </button>
@@ -278,6 +299,18 @@ const FloorsPage = () => {
                       className="w-full border border-gray-300 rounded-lg px-3 py-2"
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Max Area (sq ft)
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="sq ft"
+                      value={filters.maxArea}
+                      onChange={(e) => handleFilterChange('maxArea', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    />
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -338,36 +371,51 @@ const FloorsPage = () => {
               {/* Pagination */}
               {pagination.pages > 1 && (
                 <div className="mt-12 flex justify-center">
-                  <nav className="flex items-center space-x-2">
+                  <nav className="flex items-center space-x-2" aria-label="Pagination">
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
                       disabled={pagination.page === 1}
-                      className="px-3 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-3 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      aria-label="Previous page"
                     >
                       Previous
                     </button>
                     
-                    {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
-                      const pageNum = i + 1;
-                      return (
-                        <button
-                          key={pageNum}
-                          onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
-                          className={`px-3 py-2 border rounded-lg ${
-                            pagination.page === pageNum
-                              ? 'bg-primary-600 text-white border-primary-600'
-                              : 'hover:bg-gray-50'
-                          }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
+                    {(() => {
+                      const maxPagesToShow = 5;
+                      const halfRange = Math.floor(maxPagesToShow / 2);
+                      let startPage = Math.max(1, pagination.page - halfRange);
+                      let endPage = Math.min(pagination.pages, startPage + maxPagesToShow - 1);
+                      
+                      if (endPage - startPage < maxPagesToShow - 1) {
+                        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                      }
+                      
+                      return Array.from({ length: endPage - startPage + 1 }, (_, i) => {
+                        const pageNum = startPage + i;
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
+                            className={`px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                              pagination.page === pageNum
+                                ? 'bg-primary-600 text-white border-primary-600'
+                                : 'hover:bg-gray-50'
+                            }`}
+                            aria-label={`Page ${pageNum}`}
+                            aria-current={pagination.page === pageNum ? 'page' : undefined}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      });
+                    })()}
 
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                       disabled={pagination.page === pagination.pages}
-                      className="px-3 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-3 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      aria-label="Next page"
                     >
                       Next
                     </button>

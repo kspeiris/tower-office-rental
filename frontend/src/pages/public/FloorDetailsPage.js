@@ -23,9 +23,11 @@ const FloorDetailsPage = () => {
   const [floor, setFloor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+  const [imageError, setImageError] = useState(false);
   useEffect(() => {
     fetchFloorDetails();
+    // Reset image index when floor changes
+    setCurrentImageIndex(0);
   }, [id]);
 
   const fetchFloorDetails = async () => {
@@ -50,6 +52,13 @@ const FloorDetailsPage = () => {
   const prevImage = () => {
     if (floor.images && floor.images.length > 0) {
       setCurrentImageIndex((prev) => (prev - 1 + floor.images.length) % floor.images.length);
+    }
+  };
+  const handleKeyboardNavigation = (e) => {
+    if (e.key === 'ArrowLeft') {
+      prevImage();
+    } else if (e.key === 'ArrowRight') {
+      nextImage();
     }
   };
 
@@ -102,9 +111,9 @@ const FloorDetailsPage = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <Link
               to="/floors"
-              className="inline-flex items-center text-primary-600 hover:text-primary-700"
+              className="inline-flex items-center text-primary-600 hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded px-2 py-1"
             >
-              <HiArrowLeft className="mr-2 h-5 w-5" />
+              <HiArrowLeft className="mr-2 h-5 w-5" aria-hidden="true" />
               Back to all spaces
             </Link>
           </div>
@@ -112,40 +121,52 @@ const FloorDetailsPage = () => {
 
         {/* Image Gallery Section */}
         {floor.images && floor.images.length > 0 && (
-          <div className="relative bg-black">
+          <div className="relative bg-black" onKeyDown={handleKeyboardNavigation} tabIndex={-1}>
             <div className="max-w-7xl mx-auto">
               <div className="relative h-96 md:h-[500px]">
                 <img
                   src={floor.images[currentImageIndex]}
-                  alt={`${floor.name} - Image ${currentImageIndex + 1}`}
+                  alt={`${floor.name} - View ${currentImageIndex + 1} of ${floor.images.length}`}
                   className="w-full h-full object-cover"
+                  onError={() => setImageError(true)}
                 />
+                
+                {imageError && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+                    <p className="text-gray-600">Image failed to load</p>
+                  </div>
+                )}
                 
                 {floor.images.length > 1 && (
                   <>
                     <button
                       onClick={prevImage}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-all"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      aria-label="Previous image"
                     >
-                      <HiChevronLeft className="h-6 w-6 text-gray-800" />
+                      <HiChevronLeft className="h-6 w-6 text-gray-800" aria-hidden="true" />
                     </button>
                     <button
                       onClick={nextImage}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-all"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      aria-label="Next image"
                     >
-                      <HiChevronRight className="h-6 w-6 text-gray-800" />
+                      <HiChevronRight className="h-6 w-6 text-gray-800" aria-hidden="true" />
                     </button>
                     
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2" role="tablist" aria-label="Image navigation">
                       {floor.images.map((_, index) => (
                         <button
                           key={index}
                           onClick={() => setCurrentImageIndex(index)}
-                          className={`w-2 h-2 rounded-full transition-all ${
+                          className={`w-2 h-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-white ${
                             index === currentImageIndex
                               ? 'bg-white w-8'
                               : 'bg-white/50 hover:bg-white/75'
                           }`}
+                          role="tab"
+                          aria-label={`View image ${index + 1}`}
+                          aria-selected={index === currentImageIndex}
                         />
                       ))}
                     </div>
@@ -157,20 +178,22 @@ const FloorDetailsPage = () => {
               {floor.images.length > 1 && (
                 <div className="bg-gray-900 py-4">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex space-x-2 overflow-x-auto">
+                    <div className="flex space-x-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
                       {floor.images.map((image, index) => (
                         <button
                           key={index}
                           onClick={() => setCurrentImageIndex(index)}
-                          className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                          className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all focus:outline-none focus:ring-2 focus:ring-white ${
                             index === currentImageIndex
                               ? 'border-white'
                               : 'border-transparent opacity-60 hover:opacity-100'
                           }`}
+                          aria-label={`View image ${index + 1}`}
+                          aria-pressed={index === currentImageIndex}
                         >
                           <img
                             src={image}
-                            alt={`Thumbnail ${index + 1}`}
+                            alt={`${floor.name} thumbnail ${index + 1}`}
                             className="w-full h-full object-cover"
                           />
                         </button>
@@ -197,24 +220,26 @@ const FloorDetailsPage = () => {
                   <h2 className="text-2xl font-semibold text-gray-200 mb-4">{floor.name}</h2>
                   <div className="flex flex-wrap gap-4 mb-6">
                     <div className="flex items-center space-x-2">
-                      <HiCheckCircle className="h-5 w-5 text-green-400" />
+                      <HiCheckCircle className="h-5 w-5 text-green-400" aria-hidden="true" />
                       <span className="text-lg">{floor.status === 'available' ? 'Available Now' : 'Not Available'}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <HiArrowsExpand className="h-5 w-5" />
-                      <span className="text-lg">{floor.area.toLocaleString()} sq ft</span>
+                      <HiArrowsExpand className="h-5 w-5" aria-hidden="true" />
+                      <span className="text-lg">{floor.area?.toLocaleString() || 'N/A'} sq ft</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <HiUserGroup className="h-5 w-5" />
+                      <HiUserGroup className="h-5 w-5" aria-hidden="true" />
                       <span className="text-lg">Max {floor.maxCapacity || 'N/A'} people</span>
                     </div>
                   </div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
                   <div className="text-center">
-                    <div className="text-3xl font-bold mb-2 text-yellow-300">{floor.formattedPrice}</div>
+                    <div className="text-3xl font-bold mb-2 text-yellow-300">{floor.formattedPrice || 'Contact for pricing'}</div>
                     <div className="text-gray-200 mb-4">
-                      ${floor.pricePerSqFt}/sq ft • ${floor.pricePerMonth?.toLocaleString()}/month
+                      {floor.pricePerSqFt ? `$${floor.pricePerSqFt}/sq ft` : ''} 
+                      {floor.pricePerSqFt && floor.pricePerMonth ? ' • ' : ''}
+                      {floor.pricePerMonth ? `$${floor.pricePerMonth.toLocaleString()}/month` : ''}
                     </div>
                     {floor.status === 'available' ? (
                       <Link
@@ -255,12 +280,12 @@ const FloorDetailsPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
-                      <HiCalendar className="h-5 w-5 text-primary-600" />
+                      <HiCalendar className="h-5 w-5 text-primary-600" aria-hidden="true" />
                       <span className="font-medium">Lease Term:</span>
                       <span className="text-gray-600 capitalize">{floor.leaseTerm}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <HiLocationMarker className="h-5 w-5 text-primary-600" />
+                      <HiLocationMarker className="h-5 w-5 text-primary-600" aria-hidden="true" />
                       <span className="font-medium">View:</span>
                       <span className="text-gray-600 capitalize">{floor.view} View</span>
                     </div>
@@ -282,7 +307,7 @@ const FloorDetailsPage = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {floor.amenities?.map((amenity, index) => (
                       <div key={index} className="flex items-center space-x-3">
-                        <HiCheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                        <HiCheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" aria-hidden="true" />
                         <span>{amenitiesList[amenity] || amenity}</span>
                       </div>
                     ))}
@@ -306,7 +331,7 @@ const FloorDetailsPage = () => {
                   className="btn-primary inline-flex items-center"
                 >
                   Submit Inquiry
-                  <HiArrowLeft className="ml-2 h-5 w-5 transform rotate-180" />
+                  <HiArrowLeft className="ml-2 h-5 w-5 transform rotate-180" aria-hidden="true" />
                 </Link>
               </motion.div>
             </div>
@@ -323,14 +348,20 @@ const FloorDetailsPage = () => {
                 <div className="card p-6">
                   <h4 className="font-semibold mb-4">Contact Information</h4>
                   <div className="space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <HiPhone className="h-5 w-5 text-primary-600" />
+                    <a 
+                      href="tel:+15551234567" 
+                      className="flex items-center space-x-3 hover:text-primary-600 transition-colors"
+                    >
+                      <HiPhone className="h-5 w-5 text-primary-600" aria-hidden="true" />
                       <span>+1 (555) 123-4567</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <HiMail className="h-5 w-5 text-primary-600" />
+                    </a>
+                    <a 
+                      href="mailto:leasing@towerspace.com" 
+                      className="flex items-center space-x-3 hover:text-primary-600 transition-colors"
+                    >
+                      <HiMail className="h-5 w-5 text-primary-600" aria-hidden="true" />
                       <span>leasing@towerspace.com</span>
-                    </div>
+                    </a>
                   </div>
                 </div>
 

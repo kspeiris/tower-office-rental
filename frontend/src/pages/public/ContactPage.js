@@ -20,23 +20,28 @@ const ContactPage = () => {
     email: '',
     phone: '',
     subject: '',
-    message: ''
+    message: '',
+    newsletter: false
   };
 
   const validationSchema = Yup.object({
     name: Yup.string()
       .required('Name is required')
-      .min(2, 'Name is too short'),
+      .min(2, 'Name must be at least 2 characters')
+      .max(50, 'Name must be less than 50 characters'),
     email: Yup.string()
       .email('Invalid email address')
       .required('Email is required'),
     phone: Yup.string()
-      .required('Phone number is required'),
+      .required('Phone number is required')
+      .matches(/^[\d\s\-\+\(\)]+$/, 'Phone number is not valid'),
     subject: Yup.string()
-      .required('Subject is required'),
+      .required('Subject is required')
+      .min(3, 'Subject must be at least 3 characters'),
     message: Yup.string()
       .required('Message is required')
-      .min(10, 'Message is too short')
+      .min(10, 'Message must be at least 10 characters')
+      .max(1000, 'Message must be less than 1000 characters')
   });
 
   const handleSubmit = async (values, { resetForm }) => {
@@ -116,7 +121,7 @@ const ContactPage = () => {
             >
               {contactInfo.map((item, index) => (
                 <div key={index} className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center" aria-hidden="true">
                     {item.icon}
                   </div>
                   <div>
@@ -137,9 +142,15 @@ const ContactPage = () => {
               className="mt-8 bg-gray-100 rounded-xl p-6"
             >
               <h3 className="text-lg font-semibold mb-4">Our Location</h3>
-              <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center">
-                <HiLocationMarker className="h-12 w-12 text-gray-400" />
-              </div>
+              <a 
+                href="https://maps.google.com/?q=123+Business+District+City+Center+Metropolis+10001"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block h-48 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center hover:from-gray-300 hover:to-gray-400 transition-colors group"
+                aria-label="View location on Google Maps"
+              >
+                <HiLocationMarker className="h-12 w-12 text-gray-400 group-hover:text-gray-500 transition-colors" />
+              </a>
               <p className="text-sm text-gray-600 mt-4 text-center">
                 123 Business District, City Center, Metropolis 10001
               </p>
@@ -165,70 +176,85 @@ const ContactPage = () => {
                   <Form className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                           Full Name *
                         </label>
                         <Field
                           type="text"
+                          id="name"
                           name="name"
                           className="input-field"
                           placeholder="John Doe"
+                          aria-required="true"
+                          aria-describedby="name-error"
                         />
-                        <ErrorMessage name="name" component="div" className="mt-1 text-sm text-red-600" />
+                        <ErrorMessage name="name" component="div" id="name-error" className="mt-1 text-sm text-red-600" role="alert" />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                           Email Address *
                         </label>
                         <Field
                           type="email"
+                          id="email"
                           name="email"
                           className="input-field"
                           placeholder="john@example.com"
+                          aria-required="true"
+                          aria-describedby="email-error"
                         />
-                        <ErrorMessage name="email" component="div" className="mt-1 text-sm text-red-600" />
+                        <ErrorMessage name="email" component="div" id="email-error" className="mt-1 text-sm text-red-600" role="alert" />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
                           Phone Number *
                         </label>
                         <Field
                           type="tel"
+                          id="phone"
                           name="phone"
                           className="input-field"
                           placeholder="+1 (555) 123-4567"
+                          aria-required="true"
+                          aria-describedby="phone-error"
                         />
-                        <ErrorMessage name="phone" component="div" className="mt-1 text-sm text-red-600" />
+                        <ErrorMessage name="phone" component="div" id="phone-error" className="mt-1 text-sm text-red-600" role="alert" />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
                           Subject *
                         </label>
                         <Field
                           type="text"
+                          id="subject"
                           name="subject"
                           className="input-field"
                           placeholder="General Inquiry"
+                          aria-required="true"
+                          aria-describedby="subject-error"
                         />
-                        <ErrorMessage name="subject" component="div" className="mt-1 text-sm text-red-600" />
+                        <ErrorMessage name="subject" component="div" id="subject-error" className="mt-1 text-sm text-red-600" role="alert" />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
                         Message *
                       </label>
                       <Field
                         as="textarea"
+                        id="message"
                         name="message"
                         rows="6"
                         className="input-field"
                         placeholder="Tell us about your requirements..."
+                        aria-required="true"
+                        aria-describedby="message-error"
                       />
-                      <ErrorMessage name="message" component="div" className="mt-1 text-sm text-red-600" />
+                      <ErrorMessage name="message" component="div" id="message-error" className="mt-1 text-sm text-red-600" role="alert" />
                     </div>
 
                     <div className="flex items-center">
@@ -247,7 +273,8 @@ const ContactPage = () => {
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full btn-primary py-3 text-lg"
+                        className="w-full btn-primary py-3 text-lg disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                        aria-busy={isSubmitting}
                       >
                         {isSubmitting ? (
                           <span className="flex items-center justify-center">
@@ -300,7 +327,7 @@ const ContactPage = () => {
                 ].map((faq, index) => (
                   <div key={index} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
                     <div className="flex items-start space-x-3">
-                      <HiCheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <HiCheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" aria-hidden="true" />
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-2">{faq.q}</h4>
                         <p className="text-gray-600">{faq.a}</p>
