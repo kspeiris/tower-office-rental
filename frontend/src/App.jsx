@@ -22,30 +22,20 @@ import FloorManagement from './pages/admin/FloorManagement';
 import InquiryManagement from './pages/admin/InquiryManagement';
 import SettingsPage from './pages/admin/SettingsPage';
 
-// Auth Context
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+// Auth Context & Protected Route
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
-// Protected Route Component
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
-    );
-  }
-
-  return isAuthenticated ? children : <Navigate to="/admin/login" />;
-};
-
+// ============================================================================
+// MAIN APP COMPONENT
+// ============================================================================
 function App() {
   return (
     <HelmetProvider>
       <AuthProvider>
         <Router>
           <div className="min-h-screen bg-gray-50">
+            {/* Toast Notifications */}
             <Toaster 
               position="top-right"
               toastOptions={{
@@ -72,7 +62,9 @@ function App() {
             />
             
             <Routes>
-              {/* Public Routes */}
+              {/* ================================================================
+                  PUBLIC ROUTES - No authentication required
+                  ================================================================ */}
               <Route path="/" element={<Layout />}>
                 <Route index element={<HomePage />} />
                 <Route path="floors" element={<FloorsPage />} />
@@ -80,22 +72,37 @@ function App() {
                 <Route path="amenities" element={<AmenitiesPage />} />
                 <Route path="contact" element={<ContactPage />} />
                 <Route path="inquiry/:floorId" element={<InquiryFormPage />} />
-                <Route path="*" element={<Navigate to="/" />} />
+                
+                {/* Catch-all redirect to home */}
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
 
-              {/* Admin Routes */}
+              {/* ================================================================
+                  ADMIN AUTH ROUTES - Login page (no protection)
+                  ================================================================ */}
               <Route path="/admin/login" element={<AdminLogin />} />
-              
-              <Route path="/admin" element={
-                <ProtectedRoute>
-                  <AdminLayout />
-                </ProtectedRoute>
-              }>
+
+              {/* ================================================================
+                  PROTECTED ADMIN ROUTES - Authentication required
+                  ================================================================ */}
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute requireAdmin={false}>
+                    <AdminLayout />
+                  </ProtectedRoute>
+                }
+              >
                 <Route index element={<AdminDashboard />} />
                 <Route path="floors" element={<FloorManagement />} />
                 <Route path="inquiries" element={<InquiryManagement />} />
                 <Route path="settings" element={<SettingsPage />} />
               </Route>
+
+              {/* ================================================================
+                  CATCH-ALL - Redirect to home for undefined routes
+                  ================================================================ */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
         </Router>
