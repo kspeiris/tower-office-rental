@@ -13,22 +13,26 @@ exports.register = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
 
-    const existingUser = await User.findOne({ 
-      $or: [{ email }, { username }] 
+    const existingUser = await User.findOne({
+      $or: [{ email }, { username }]
     });
 
     if (existingUser) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        error: 'User with this email or username already exists' 
+        error: 'User with this email or username already exists'
       });
     }
+
+    // Only allow 'admin' role via public registration
+    // 'super_admin' should only be created via database or by another super_admin
+    const userRole = (role === 'super_admin') ? 'admin' : (role || 'admin');
 
     const user = new User({
       username,
       email,
       password,
-      role: role || 'admin'
+      role: userRole
     });
 
     await user.save();
@@ -46,9 +50,9 @@ exports.register = async (req, res) => {
     });
   } catch (error) {
     console.error('❌ Register Error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      error: error.message 
+      error: error.message
     });
   }
 };
@@ -61,21 +65,21 @@ exports.login = async (req, res) => {
     // Find user
     const user = await User.findOne({ email });
     console.log('👤 User found:', user ? 'YES' : 'NO');
-    
+
     if (!user) {
       console.log('❌ User not found for email:', email);
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        error: 'Invalid credentials' 
+        error: 'Invalid credentials'
       });
     }
 
     console.log('🔒 User active status:', user.isActive);
     if (!user.isActive) {
       console.log('❌ User is inactive');
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        error: 'Invalid credentials' 
+        error: 'Invalid credentials'
       });
     }
 
@@ -83,12 +87,12 @@ exports.login = async (req, res) => {
     console.log('🔑 Checking password...');
     const isPasswordValid = await user.comparePassword(password);
     console.log('✅ Password valid:', isPasswordValid);
-    
+
     if (!isPasswordValid) {
       console.log('❌ Invalid password');
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        error: 'Invalid credentials' 
+        error: 'Invalid credentials'
       });
     }
 
@@ -110,37 +114,37 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     console.error('❌ Login Error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      error: error.message 
+      error: error.message
     });
   }
 };
 
 exports.logout = async (req, res) => {
   try {
-    res.json({ 
+    res.json({
       success: true,
-      message: 'Logout successful' 
+      message: 'Logout successful'
     });
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      error: error.message 
+      error: error.message
     });
   }
 };
 
 exports.getProfile = async (req, res) => {
   try {
-    res.json({ 
+    res.json({
       success: true,
-      user: req.user.toJSON() 
+      user: req.user.toJSON()
     });
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      error: error.message 
+      error: error.message
     });
   }
 };
@@ -169,9 +173,9 @@ exports.updateProfile = async (req, res) => {
       user: user.toJSON()
     });
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      error: error.message 
+      error: error.message
     });
   }
 };

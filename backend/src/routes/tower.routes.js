@@ -8,6 +8,7 @@ const { uploadSingle } = require('../middleware/upload');
 // PUBLIC ROUTES
 // ============================
 router.get('/', towerController.getTowerInfo);
+router.get('/stats', towerController.getPublicStats); // ADD THIS LINE
 
 // ============================
 // ADMIN ROUTES (Protected)

@@ -35,6 +35,12 @@ const FloorsPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pages: 1,
+    total: 0,
+    limit: 12
+  });
   const [filters, setFilters] = useState({
     status: '',
     minPrice: '',
@@ -42,34 +48,31 @@ const FloorsPage = () => {
     minArea: '',
     maxArea: '',
     sortBy: 'floorNumber',
-    sortOrder: 'asc'
+    sortOrder: 'asc',
+    page: 1,
+    limit: 12
   });
   const [viewMode, setViewMode] = useState('grid');
   const [showFilters, setShowFilters] = useState(false);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pages: 1,
-    total: 0,
-    limit: 12
-  });
-
   useEffect(() => {
     fetchFloors();
-  }, [filters, pagination.page, debouncedSearchTerm]);
+  }, [filters, debouncedSearchTerm]);
 
   const fetchFloors = async () => {
     try {
       setLoading(true);
       const params = {
         ...filters,
-        page: pagination.page,
-        limit: pagination.limit,
         ...(debouncedSearchTerm && { search: debouncedSearchTerm })
       };
-      
+
       const response = await floorApi.getAll(params);
       setFloors(response.data.floors || []);
-      setPagination(response.data.pagination || pagination);
+
+      // Update pagination without triggering another fetch
+      if (response.data.pagination) {
+        setPagination(response.data.pagination);
+      }
     } catch (error) {
       console.error('Error fetching floors:', error);
     } finally {
@@ -78,11 +81,18 @@ const FloorsPage = () => {
   };
 
   const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-    setPagination(prev => ({ ...prev, page: 1 }));
+    setFilters(prev => ({
+      ...prev,
+      [key]: value,
+      page: 1 // Reset to first page on filter change
+    }));
   };
 
-  
+  const handlePageChange = (newPage) => {
+    setFilters(prev => ({ ...prev, page: newPage }));
+  };
+
+
 
   const clearFilters = () => {
     setFilters({
@@ -337,7 +347,7 @@ const FloorsPage = () => {
 
               {/* Floors Display */}
               {floors.length > 0 ? (
-                <div className={viewMode === 'grid' 
+                <div className={viewMode === 'grid'
                   ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
                   : 'space-y-6'
                 }>
@@ -373,35 +383,34 @@ const FloorsPage = () => {
                 <div className="mt-12 flex justify-center">
                   <nav className="flex items-center space-x-2" aria-label="Pagination">
                     <button
-                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                      onClick={() => handlePageChange(pagination.page - 1)}
                       disabled={pagination.page === 1}
                       className="px-3 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500"
                       aria-label="Previous page"
                     >
                       Previous
                     </button>
-                    
+
                     {(() => {
                       const maxPagesToShow = 5;
                       const halfRange = Math.floor(maxPagesToShow / 2);
                       let startPage = Math.max(1, pagination.page - halfRange);
                       let endPage = Math.min(pagination.pages, startPage + maxPagesToShow - 1);
-                      
+
                       if (endPage - startPage < maxPagesToShow - 1) {
                         startPage = Math.max(1, endPage - maxPagesToShow + 1);
                       }
-                      
+
                       return Array.from({ length: endPage - startPage + 1 }, (_, i) => {
                         const pageNum = startPage + i;
                         return (
                           <button
                             key={pageNum}
-                            onClick={() => setPagination(prev => ({ ...prev, page: pageNum }))}
-                            className={`px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                              pagination.page === pageNum
-                                ? 'bg-primary-600 text-white border-primary-600'
-                                : 'hover:bg-gray-50'
-                            }`}
+                            onClick={() => handlePageChange(pageNum)}
+                            className={`px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${pagination.page === pageNum
+                              ? 'bg-primary-600 text-white border-primary-600'
+                              : 'hover:bg-gray-50'
+                              }`}
                             aria-label={`Page ${pageNum}`}
                             aria-current={pagination.page === pageNum ? 'page' : undefined}
                           >
@@ -412,7 +421,7 @@ const FloorsPage = () => {
                     })()}
 
                     <button
-                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                      onClick={() => handlePageChange(pagination.page + 1)}
                       disabled={pagination.page === pagination.pages}
                       className="px-3 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500"
                       aria-label="Next page"

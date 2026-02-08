@@ -4,7 +4,7 @@ const cloudinary = require('../config/cloudinary');
 // Helper function to upload buffer to Cloudinary
 const uploadToCloudinary = async (fileBuffer, mimetype, folder = 'floor-images') => {
   const fileStr = `data:${mimetype};base64,${fileBuffer.toString('base64')}`;
-  
+
   const result = await cloudinary.uploader.upload(fileStr, {
     folder: `tower-office/${folder}`,
     resource_type: 'image',
@@ -13,26 +13,26 @@ const uploadToCloudinary = async (fileBuffer, mimetype, folder = 'floor-images')
       { quality: 'auto:good' }
     ]
   });
-  
+
   return result.secure_url;
 };
 
 // Helper function to delete images from Cloudinary
 const deleteCloudinaryImages = async (imageUrls) => {
   if (!imageUrls || imageUrls.length === 0) return;
-  
+
   const deletePromises = imageUrls.map(url => {
     try {
       // Extract public_id from Cloudinary URL
       const urlParts = url.split('/');
       const uploadIndex = urlParts.indexOf('upload');
       if (uploadIndex === -1) return Promise.resolve();
-      
+
       // Get everything after 'upload/vX/'
       const publicIdParts = urlParts.slice(uploadIndex + 2);
       const publicIdWithExt = publicIdParts.join('/');
       const publicId = publicIdWithExt.substring(0, publicIdWithExt.lastIndexOf('.'));
-      
+
       console.log('🗑️ Deleting from Cloudinary:', publicId);
       return cloudinary.uploader.destroy(publicId);
     } catch (error) {
@@ -40,7 +40,7 @@ const deleteCloudinaryImages = async (imageUrls) => {
       return Promise.resolve();
     }
   });
-  
+
   await Promise.allSettled(deletePromises);
 };
 
@@ -48,21 +48,21 @@ const deleteCloudinaryImages = async (imageUrls) => {
 exports.createFloor = async (req, res) => {
   try {
     const floorData = req.body;
-    
+
     console.log('📝 Creating new floor...');
     console.log('Files received:', req.files ? Object.keys(req.files) : 'none');
-    
+
     // Handle uploaded images (memory storage - from buffer)
     if (req.files) {
       if (req.files.images && req.files.images.length > 0) {
         console.log(`📤 Uploading ${req.files.images.length} images...`);
-        const uploadPromises = req.files.images.map(file => 
+        const uploadPromises = req.files.images.map(file =>
           uploadToCloudinary(file.buffer, file.mimetype, 'floor-images')
         );
         floorData.images = await Promise.all(uploadPromises);
         console.log('✅ Images uploaded successfully');
       }
-      
+
       if (req.files.floorPlan && req.files.floorPlan[0]) {
         console.log('📤 Uploading floor plan...');
         floorData.floorPlan = await uploadToCloudinary(
@@ -73,7 +73,15 @@ exports.createFloor = async (req, res) => {
         console.log('✅ Floor plan uploaded successfully');
       }
     }
-    
+
+    // Check if floor number already exists
+    if (floorData.floorNumber) {
+      const existingFloor = await Floor.findOne({ floorNumber: floorData.floorNumber });
+      if (existingFloor) {
+        return res.status(400).json({ error: `Floor number ${floorData.floorNumber} already exists.` });
+      }
+    }
+
     // Calculate total price if not provided
     if (!floorData.totalPrice && floorData.area && floorData.pricePerSqFt) {
       floorData.totalPrice = floorData.area * floorData.pricePerSqFt;
@@ -90,7 +98,9 @@ exports.createFloor = async (req, res) => {
     });
   } catch (error) {
     console.error('❌ Create floor error:', error);
-    // Note: No need to delete uploaded images as Cloudinary handles failed uploads
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'Floor number must be unique.' });
+    }
     res.status(500).json({ error: error.message });
   }
 };
@@ -98,11 +108,11 @@ exports.createFloor = async (req, res) => {
 // Get All Floors
 exports.getAllFloors = async (req, res) => {
   try {
-    const { 
-      status, 
-      minPrice, 
-      maxPrice, 
-      minArea, 
+    const {
+      status,
+      minPrice,
+      maxPrice,
+      minArea,
       maxArea,
       sortBy = 'floorNumber',
       sortOrder = 'asc',
@@ -169,7 +179,7 @@ exports.getAllFloors = async (req, res) => {
 exports.getFloorById = async (req, res) => {
   try {
     const floor = await Floor.findById(req.params.id).lean();
-    
+
     if (!floor) {
       return res.status(404).json({ error: 'Floor not found' });
     }
@@ -193,7 +203,7 @@ exports.updateFloor = async (req, res) => {
   try {
     const updates = req.body;
     const floor = await Floor.findById(req.params.id);
-    
+
     if (!floor) {
       return res.status(404).json({ error: 'Floor not found' });
     }
@@ -205,11 +215,11 @@ exports.updateFloor = async (req, res) => {
     if (req.files) {
       if (req.files.images && req.files.images.length > 0) {
         console.log(`📤 Uploading ${req.files.images.length} new images...`);
-        const uploadPromises = req.files.images.map(file => 
+        const uploadPromises = req.files.images.map(file =>
           uploadToCloudinary(file.buffer, file.mimetype, 'floor-images')
         );
         const newImages = await Promise.all(uploadPromises);
-        
+
         // If replacing images, delete old ones
         if (updates.replaceImages === 'true' && floor.images.length > 0) {
           console.log('🗑️ Replacing old images...');
@@ -221,7 +231,7 @@ exports.updateFloor = async (req, res) => {
         }
         console.log('✅ Images updated successfully');
       }
-      
+
       if (req.files.floorPlan && req.files.floorPlan[0]) {
         console.log('📤 Uploading new floor plan...');
         // Delete old floor plan if exists
@@ -236,7 +246,15 @@ exports.updateFloor = async (req, res) => {
         console.log('✅ Floor plan updated successfully');
       }
     }
-    
+
+    // Check for floor number uniqueness if it's being updated
+    if (updates.floorNumber && Number(updates.floorNumber) !== floor.floorNumber) {
+      const existingFloor = await Floor.findOne({ floorNumber: updates.floorNumber });
+      if (existingFloor) {
+        return res.status(400).json({ error: `Floor number ${updates.floorNumber} already exists on another floor.` });
+      }
+    }
+
     // Recalculate total price if area or price per sq ft changes
     if ((updates.area || updates.pricePerSqFt) && !updates.totalPrice) {
       const area = updates.area || floor.area;
@@ -260,6 +278,9 @@ exports.updateFloor = async (req, res) => {
     });
   } catch (error) {
     console.error('❌ Update floor error:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'Floor number must be unique.' });
+    }
     res.status(500).json({ error: error.message });
   }
 };
@@ -280,7 +301,7 @@ exports.deleteFloor = async (req, res) => {
     if (floor.floorPlan) {
       imagesToDelete.push(floor.floorPlan);
     }
-    
+
     if (imagesToDelete.length > 0) {
       console.log(`🗑️ Deleting ${imagesToDelete.length} images from Cloudinary...`);
       await deleteCloudinaryImages(imagesToDelete);

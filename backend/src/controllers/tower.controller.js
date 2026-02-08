@@ -1,11 +1,35 @@
 const TowerInfo = require('../models/TowerInfo');
+const Floor = require('../models/Floor');
 const cloudinary = require('../config/cloudinary');
+
+// Get basic tower statistics for public display
+exports.getPublicStats = async (req, res) => {
+  try {
+    const [totalFloors, availableFloors] = await Promise.all([
+      Floor.countDocuments(),
+      Floor.countDocuments({ status: 'available' })
+    ]);
+
+    const occupancyRate = totalFloors > 0
+      ? Math.round(((totalFloors - availableFloors) / totalFloors) * 100)
+      : 0;
+
+    res.json({
+      totalFloors,
+      availableFloors,
+      occupancyRate
+    });
+  } catch (error) {
+    console.error('Get public stats error:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
 
 // Get tower info
 exports.getTowerInfo = async (req, res) => {
   try {
     const towerInfo = await TowerInfo.findOne().lean();
-    
+
     if (!towerInfo) {
       return res.json({
         towerInfo: {
@@ -33,11 +57,11 @@ exports.updateTowerInfo = async (req, res) => {
     const towerInfo = await TowerInfo.findOneAndUpdate(
       {},
       updates,
-      { 
-        new: true, 
-        upsert: true, 
+      {
+        new: true,
+        upsert: true,
         runValidators: true,
-        setDefaultsOnInsert: true 
+        setDefaultsOnInsert: true
       }
     ).lean();
 
@@ -221,13 +245,13 @@ function extractYoutubeId(url) {
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^#&?]+)/,
     /^([a-zA-Z0-9_-]{11})$/ // Direct video ID
   ];
-  
+
   for (const pattern of patterns) {
     const match = url.match(pattern);
     if (match && match[1]) {
       return match[1];
     }
   }
-  
+
   return null;
 }

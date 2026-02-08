@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
           try {
             const response = await api.get('/auth/profile');
             console.log('✅ Profile response:', response.data);
-            
+
             if (response.data.success) {
               setUser(response.data.user);
               setIsAuthenticated(true);
@@ -55,27 +55,27 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, rememberMe = false) => {
     try {
-      console.log('🔐 Attempting login...', { email });
+      console.log('🔐 Attempting login...', { email, rememberMe });
       const response = await api.post('/auth/login', { email, password });
-      
+
       console.log('📥 Login response:', response.data);
-      
+
       if (response.data.success && response.data.token) {
         const { token, user } = response.data;
-        
+
         console.log('✅ Login successful, saving data...');
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         setUser(user);
         setIsAuthenticated(true);
-        
+
         toast.success('Login successful!');
         return { success: true, user };
       }
-      
+
       const errorMsg = response.data.error || 'Login failed';
       console.log('❌ Login failed:', errorMsg);
       toast.error(errorMsg);
@@ -92,30 +92,30 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await api.post('/auth/register', userData);
-      
+
       if (response.data.success && response.data.token) {
         const { token, user } = response.data;
-        
+
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        
+
         setUser(user);
         setIsAuthenticated(true);
-        
+
         return { success: true, user };
       }
-      
-      return { 
-        success: false, 
-        error: response.data.error || 'Registration failed' 
+
+      return {
+        success: false,
+        error: response.data.error || 'Registration failed'
       };
     } catch (error) {
       console.error('Registration error:', error);
-      return { 
-        success: false, 
-        error: error.response?.data?.error || 'Registration failed. Please try again.' 
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Registration failed. Please try again.'
       };
     }
   };
@@ -130,7 +130,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('user');
       setUser(null);
       setIsAuthenticated(false);
-      
+
       toast.success('Logged out successfully');
     }
   };
@@ -138,16 +138,16 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async (updates) => {
     try {
       const response = await api.put('/auth/profile', updates);
-      
+
       if (response.data.success) {
         const updatedUser = response.data.user;
         setUser(updatedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        
+
         toast.success('Profile updated successfully');
         return { success: true, user: updatedUser };
       }
-      
+
       const errorMsg = response.data.error || 'Update failed';
       toast.error(errorMsg);
       return { success: false, error: errorMsg };

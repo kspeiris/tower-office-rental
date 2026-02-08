@@ -1,6 +1,21 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const getApiUrl = () => {
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  // Fallback for CRA or other environments if still used
+  try {
+    if (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) {
+      return process.env.REACT_APP_API_URL;
+    }
+  } catch (e) {
+    // process is not defined
+  }
+  return 'http://localhost:5000/api';
+};
+
+const API_URL = getApiUrl();
 
 const api = axios.create({
   baseURL: API_URL,
@@ -28,9 +43,18 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      // Clear invalid credentials
+      const hadToken = !!localStorage.getItem('token');
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/admin/login';
+
+      // Only redirect if we are currently on an admin page or had a token
+      // this prevents public users from being randomly redirected to login
+      const isParamAdmin = window.location.pathname.startsWith('/admin');
+
+      if (isParamAdmin && window.location.pathname !== '/admin/login' && hadToken) {
+        window.location.href = '/admin/login?expired=true';
+      }
     }
     return Promise.reject(error);
   }
@@ -76,15 +100,16 @@ export const adminApi = {
 
 // Tower API
 export const towerApi = {
+  getPublicStats: () => api.get('/tower/stats'),
   getInfo: () => api.get('/tower'),
   updateInfo: (data) => api.put('/tower', data),
-  
+
   // Feature Images
   uploadFeatureImage: (formData) => api.post('/tower/feature-images', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   deleteFeatureImage: (publicId) => api.delete('/tower/feature-images', { data: { publicId } }),
-  
+
   // YouTube Videos
   addYoutubeVideo: (data) => api.post('/tower/youtube-videos', data),
   deleteYoutubeVideo: (videoId) => api.delete('/tower/youtube-videos', { data: { videoId } })

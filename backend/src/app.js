@@ -11,7 +11,7 @@ const authRoutes = require('./routes/auth.routes');
 const floorRoutes = require('./routes/floor.routes');
 const inquiryRoutes = require('./routes/inquiry.routes');
 const adminRoutes = require('./routes/admin.routes');
-const towerRoutes = require('./routes/tower.routes'); // ADD THIS LINE
+const towerRoutes = require('./routes/tower.routes');
 
 const app = express();
 
@@ -31,14 +31,36 @@ app.use(helmet({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 500, // Increased for development and image-heavy requests
   message: 'Too many requests from this IP, please try again later.'
 });
 app.use('/api/', limiter);
 
 // Middleware
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+];
+
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL.replace(/\/$/, ''));
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes(origin.replace(/\/$/, ''))) {
+      callback(null, true);
+    } else {
+      console.log('❌ CORS blocked for origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(morgan('combined'));
@@ -55,7 +77,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/floors', floorRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/tower', towerRoutes); // ADD THIS LINE
+app.use('/api/tower', towerRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -70,7 +92,7 @@ app.use((req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('❌ Error:', err);
-  
+
   // Handle Multer errors
   if (err.name === 'MulterError') {
     if (err.code === 'LIMIT_FILE_SIZE') {

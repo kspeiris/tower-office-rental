@@ -4,6 +4,7 @@ const floorSchema = new mongoose.Schema({
   floorNumber: {
     type: Number,
     required: true,
+    unique: true,
     min: 1,
     max: 100
   },

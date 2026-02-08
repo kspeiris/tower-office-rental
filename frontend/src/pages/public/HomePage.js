@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { 
-  HiBuildingOffice2, 
-  HiCheckCircle, 
+import {
+  HiBuildingOffice2,
+  HiCheckCircle,
   HiArrowRight,
   HiUsers,
   HiChartBar,
@@ -106,25 +106,25 @@ const HomePage = () => {
   ];
 
   const towerStats = [
-    { 
-      label: 'Total Floors', 
-      value: dashboardStats?.totalFloors || 25, 
-      icon: <HiBuildingLibrary /> 
+    {
+      label: 'Total Floors',
+      value: dashboardStats?.totalFloors || 25,
+      icon: <HiBuildingLibrary />
     },
-    { 
-      label: 'Occupancy Rate', 
-      value: `${dashboardStats?.occupancyRate || 92}%`, 
-      icon: <HiChartBar /> 
+    {
+      label: 'Occupancy Rate',
+      value: `${dashboardStats?.occupancyRate || 92}%`,
+      icon: <HiChartBar />
     },
-    { 
-      label: 'Available Spaces', 
-      value: dashboardStats?.availableFloors || 8, 
-      icon: <HiHomeModern /> 
+    {
+      label: 'Available Spaces',
+      value: dashboardStats?.availableFloors || 8,
+      icon: <HiHomeModern />
     },
-    { 
-      label: 'Tenant Companies', 
-      value: '50+', 
-      icon: <HiUsers /> 
+    {
+      label: 'Tenant Companies',
+      value: '50+',
+      icon: <HiUsers />
     }
   ];
 
@@ -157,7 +157,7 @@ const HomePage = () => {
       setLoading(true);
       const [floorsResponse, statsResponse, towerResponse] = await Promise.all([
         floorApi.getFeatured(),
-        adminApi.getDashboardStats(),
+        towerApi.getPublicStats(),
         towerApi.getInfo()
       ]);
       setFeaturedFloors(floorsResponse.data.floors || []);
@@ -203,8 +203,8 @@ const HomePage = () => {
       </Helmet>
 
       {/* Hero Section */}
-      <section 
-        className="relative min-h-screen flex items-center justify-center overflow-hidden" 
+      <section
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
         onKeyDown={handleCarouselKeyboard}
         tabIndex={0}
         role="region"
@@ -245,15 +245,14 @@ const HomePage = () => {
             >
               <HiChevronLeft className="h-6 w-6 text-white" aria-hidden="true" />
             </button>
-            
+
             <div className="flex space-x-2">
               {towerImages.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setActiveImage(index)}
-                  className={`w-2 h-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-white ${
-                    index === activeImage ? 'bg-white w-8' : 'bg-white/50 hover:bg-white/75'
-                  }`}
+                  className={`w-2 h-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-white ${index === activeImage ? 'bg-white w-8' : 'bg-white/50 hover:bg-white/75'
+                    }`}
                   aria-label={`View slide ${index + 1}`}
                   aria-current={index === activeImage ? 'true' : 'false'}
                 />
@@ -295,7 +294,7 @@ const HomePage = () => {
               <HiStar className="h-4 w-4 text-yellow-300 mr-2" aria-hidden="true" />
               <span className="text-sm font-medium">Premium Grade A Building</span>
             </div>
-            
+
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
               <span className="text-cyan-300">JFI Tower 3</span>
               <br />
@@ -303,12 +302,12 @@ const HomePage = () => {
               <br />
               Meets <span className="text-yellow-300">Excellence</span>
             </h1>
-            
+
             <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mb-8">
-              A landmark commercial tower offering premium office spaces with cutting-edge 
+              A landmark commercial tower offering premium office spaces with cutting-edge
               amenities in the heart of the business district.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => navigate('/floors')}
@@ -317,7 +316,7 @@ const HomePage = () => {
                 <span>Explore Available Spaces</span>
                 <HiArrowRightCircle className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
               </button>
-              
+
               <button
                 onClick={() => navigate('/contact')}
                 className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900"
@@ -367,7 +366,7 @@ const HomePage = () => {
               Unmatched <span className="text-blue-600">Premium</span> Experience
             </h2>
             <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-              JFI Tower 3 redefines commercial excellence with state-of-the-art facilities 
+              JFI Tower 3 redefines commercial excellence with state-of-the-art facilities
               and innovative workspaces designed for the modern enterprise.
             </p>
           </div>
@@ -469,16 +468,16 @@ const HomePage = () => {
                 <HiTrophy className="h-4 w-4 text-yellow-300 mr-2" />
                 <span className="text-sm font-medium">WORLD-CLASS AMENITIES</span>
               </div>
-              
+
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
                 Experience the <span className="text-cyan-300">Future</span> of Work
               </h2>
-              
+
               <p className="text-gray-300 text-lg mb-8">
-                Our comprehensive suite of amenities is designed to elevate productivity, 
+                Our comprehensive suite of amenities is designed to elevate productivity,
                 foster collaboration, and enhance the work-life balance of every occupant.
               </p>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {amenities.map((amenity, index) => (
                   <div key={index} className="flex items-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
@@ -581,7 +580,7 @@ const HomePage = () => {
               Join the <span className="text-blue-600">Elite</span> Community
             </h2>
             <p className="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
-              Be part of a curated ecosystem of industry leaders, innovators, 
+              Be part of a curated ecosystem of industry leaders, innovators,
               and forward-thinking companies at JFI Tower 3.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
