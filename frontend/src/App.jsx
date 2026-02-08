@@ -24,6 +24,7 @@ import SettingsPage from './pages/admin/SettingsPage';
 
 // Auth Context & Protected Route
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 // ============================================================================
@@ -32,81 +33,83 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 function App() {
   return (
     <HelmetProvider>
-      <AuthProvider>
-        <Router>
-          <div className="min-h-screen bg-gray-50">
-            {/* Toast Notifications */}
-            <Toaster 
-              position="top-right"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: '#363636',
-                  color: '#fff',
-                },
-                success: {
-                  duration: 3000,
-                  iconTheme: {
-                    primary: '#10B981',
-                    secondary: '#fff',
-                  },
-                },
-                error: {
+      <ThemeProvider>
+        <AuthProvider>
+          <Router>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+              {/* Toast Notifications */}
+              <Toaster
+                position="top-right"
+                toastOptions={{
                   duration: 4000,
-                  iconTheme: {
-                    primary: '#EF4444',
-                    secondary: '#fff',
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
                   },
-                },
-              }}
-            />
-            
-            <Routes>
-              {/* ================================================================
+                  success: {
+                    duration: 3000,
+                    iconTheme: {
+                      primary: '#10B981',
+                      secondary: '#fff',
+                    },
+                  },
+                  error: {
+                    duration: 4000,
+                    iconTheme: {
+                      primary: '#EF4444',
+                      secondary: '#fff',
+                    },
+                  },
+                }}
+              />
+
+              <Routes>
+                {/* ================================================================
                   PUBLIC ROUTES - No authentication required
                   ================================================================ */}
-              <Route path="/" element={<Layout />}>
-                <Route index element={<HomePage />} />
-                <Route path="floors" element={<FloorsPage />} />
-                <Route path="floors/:id" element={<FloorDetailsPage />} />
-                <Route path="amenities" element={<AmenitiesPage />} />
-                <Route path="contact" element={<ContactPage />} />
-                <Route path="inquiry/:floorId" element={<InquiryFormPage />} />
-                
-                {/* Catch-all redirect to home */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Route>
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<HomePage />} />
+                  <Route path="floors" element={<FloorsPage />} />
+                  <Route path="floors/:id" element={<FloorDetailsPage />} />
+                  <Route path="amenities" element={<AmenitiesPage />} />
+                  <Route path="contact" element={<ContactPage />} />
+                  <Route path="inquiry/:floorId" element={<InquiryFormPage />} />
 
-              {/* ================================================================
+                  {/* Catch-all redirect to home */}
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Route>
+
+                {/* ================================================================
                   ADMIN AUTH ROUTES - Login page (no protection)
                   ================================================================ */}
-              <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin/login" element={<AdminLogin />} />
 
-              {/* ================================================================
+                {/* ================================================================
                   PROTECTED ADMIN ROUTES - Authentication required
                   ================================================================ */}
-              <Route 
-                path="/admin" 
-                element={
-                  <ProtectedRoute requireAdmin={false}>
-                    <AdminLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<AdminDashboard />} />
-                <Route path="floors" element={<FloorManagement />} />
-                <Route path="inquiries" element={<InquiryManagement />} />
-                <Route path="settings" element={<SettingsPage />} />
-              </Route>
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute requireAdmin={false}>
+                      <AdminLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="floors" element={<FloorManagement />} />
+                  <Route path="inquiries" element={<InquiryManagement />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                </Route>
 
-              {/* ================================================================
+                {/* ================================================================
                   CATCH-ALL - Redirect to home for undefined routes
                   ================================================================ */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </div>
-        </Router>
-      </AuthProvider>
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </div>
+          </Router>
+        </AuthProvider>
+      </ThemeProvider>
     </HelmetProvider>
   );
 }

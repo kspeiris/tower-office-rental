@@ -23,15 +23,15 @@ import toast from 'react-hot-toast';
 // ============================================================================
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
-  
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
-    
+
     return () => clearTimeout(handler);
   }, [value, delay]);
-  
+
   return debouncedValue;
 };
 
@@ -40,30 +40,29 @@ const useDebounce = (value, delay) => {
 // ============================================================================
 const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel, isDangerous = false }) => {
   if (!isOpen) return null;
-  
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60]">
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-white rounded-lg p-6 max-w-sm mx-4"
+        className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-sm mx-4 shadow-2xl border border-gray-100 dark:border-gray-700"
       >
-        <h3 className="text-lg font-semibold mb-2 text-gray-900">{title}</h3>
-        <p className="text-gray-600 mb-6">{message}</p>
+        <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">{title}</h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-8">{message}</p>
         <div className="flex justify-end space-x-3">
           <button
             onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-6 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-semibold"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className={`px-4 py-2 text-white rounded-lg transition-colors ${
-              isDangerous
-                ? 'bg-red-600 hover:bg-red-700'
-                : 'bg-blue-600 hover:bg-blue-700'
-            }`}
+            className={`px-6 py-2.5 text-white rounded-xl transition-all shadow-lg font-semibold active:scale-95 ${isDangerous
+              ? 'bg-red-600 hover:bg-red-700 shadow-red-500/20'
+              : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20'
+              }`}
           >
             Confirm
           </button>
@@ -86,19 +85,19 @@ const InquiryManagement = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('desc');
-  
+
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     inquiryId: null,
     newStatus: null
   });
-  
+
   const [filters, setFilters] = useState({
     status: '',
     search: ''
   });
-  
+
   // Debounce search input to prevent excessive API calls
   const debouncedSearch = useDebounce(filters.search, 500);
 
@@ -155,20 +154,20 @@ const InquiryManagement = () => {
 
   const getStatusBadge = (status) => {
     const config = {
-      new: { color: 'bg-blue-100 text-blue-800', icon: <HiClock />, label: 'New' },
-      contacted: { color: 'bg-purple-100 text-purple-800', icon: <HiPhone />, label: 'Contacted' },
-      viewing_scheduled: { color: 'bg-yellow-100 text-yellow-800', icon: <HiCalendar />, label: 'Viewing Scheduled' },
-      offer_sent: { color: 'bg-indigo-100 text-indigo-800', icon: <HiMail />, label: 'Offer Sent' },
-      closed: { color: 'bg-green-100 text-green-800', icon: <HiCheckCircle />, label: 'Closed' },
-      rejected: { color: 'bg-red-100 text-red-800', icon: <HiXCircle />, label: 'Rejected' }
+      new: { color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300', icon: <HiClock />, label: 'New' },
+      contacted: { color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300', icon: <HiPhone />, label: 'Contacted' },
+      viewing_scheduled: { color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300', icon: <HiCalendar />, label: 'Viewing Scheduled' },
+      offer_sent: { color: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300', icon: <HiMail />, label: 'Offer Sent' },
+      closed: { color: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300', icon: <HiCheckCircle />, label: 'Closed' },
+      rejected: { color: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300', icon: <HiXCircle />, label: 'Rejected' }
     };
 
     const { color, icon, label } = config[status] || config.new;
 
     return (
-      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${color}`}>
-        {icon}
-        <span className="ml-1">{label}</span>
+      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${color}`}>
+        {React.cloneElement(icon, { className: 'h-3.5 w-3.5 mr-1.5' })}
+        {label}
       </span>
     );
   };
@@ -210,13 +209,13 @@ const InquiryManagement = () => {
   return (
     <>
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Inquiry Management</h1>
-        <p className="text-gray-600">Manage and track all rental inquiries</p>
+      <div className="mb-8">
+        <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Inquiry Management</h1>
+        <p className="text-gray-500 dark:text-gray-400 font-medium">Manage and track all rental inquiries</p>
       </div>
 
       {/* Filters */}
-      <div className="card p-6 mb-6">
+      <div className="card p-6 mb-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex-1 max-w-md">
             <div className="relative">
@@ -226,7 +225,7 @@ const InquiryManagement = () => {
                 placeholder="Search by name, email, or company..."
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white transition-all"
               />
             </div>
           </div>
@@ -235,10 +234,10 @@ const InquiryManagement = () => {
             <select
               value={filters.status}
               onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white transition-all"
             >
               {statusOptions.map(option => (
-                <option key={option.value} value={option.value}>
+                <option key={option.value} value={option.value} className="dark:bg-gray-900">
                   {option.label}
                 </option>
               ))}
@@ -255,11 +254,12 @@ const InquiryManagement = () => {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th 
+                    <th
                       className="table-header cursor-pointer hover:bg-gray-100 transition-colors select-none"
                       onClick={() => handleSort('name')}
                     >
@@ -270,7 +270,7 @@ const InquiryManagement = () => {
                     </th>
                     <th className="table-header">Floor</th>
                     <th className="table-header">Contact</th>
-                    <th 
+                    <th
                       className="table-header cursor-pointer hover:bg-gray-100 transition-colors select-none"
                       onClick={() => handleSort('createdAt')}
                     >
@@ -283,50 +283,50 @@ const InquiryManagement = () => {
                     <th className="table-header">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-gray-800/50 divide-y divide-gray-100 dark:divide-gray-700">
                   {inquiries.map((inquiry) => (
                     <motion.tr
                       key={inquiry._id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="hover:bg-gray-50"
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                     >
                       <td className="table-cell">
                         <div>
-                          <div className="font-medium text-gray-900">{inquiry.name}</div>
-                          <div className="text-sm text-gray-500">{inquiry.company || 'No company'}</div>
+                          <div className="font-bold text-gray-900 dark:text-white">{inquiry.name}</div>
+                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{inquiry.company || 'Private'}</div>
                         </div>
                       </td>
                       <td className="table-cell">
                         {inquiry.floorId ? (
                           <div>
-                            <div className="font-medium">Floor {inquiry.floorId.floorNumber}</div>
-                            <div className="text-sm text-gray-500">{inquiry.floorId.name}</div>
+                            <div className="font-bold text-gray-700 dark:text-gray-300">Floor {inquiry.floorId.floorNumber}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{inquiry.floorId.name}</div>
                           </div>
                         ) : (
-                          <span className="text-gray-500">N/A</span>
+                          <span className="text-gray-400 italic">General</span>
                         )}
                       </td>
                       <td className="table-cell">
                         <div className="space-y-1">
-                          <div className="text-sm">{inquiry.email}</div>
-                          <div className="text-sm text-gray-500">{inquiry.phone}</div>
+                          <div className="text-sm font-medium text-gray-700 dark:text-gray-300">{inquiry.email}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-500">{inquiry.phone}</div>
                         </div>
                       </td>
                       <td className="table-cell">
-                        {formatDate(inquiry.createdAt)}
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{formatDate(inquiry.createdAt)}</span>
                       </td>
                       <td className="table-cell">
                         {getStatusBadge(inquiry.status)}
                       </td>
                       <td className="table-cell">
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-3">
                           <button
                             onClick={() => {
                               setSelectedInquiry(inquiry);
                               setIsModalOpen(true);
                             }}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-colors"
                             title="View Details"
                           >
                             <HiEye className="h-5 w-5" />
@@ -335,7 +335,7 @@ const InquiryManagement = () => {
                             value={inquiry.status}
                             onChange={(e) => handleStatusUpdateClick(inquiry._id, e.target.value)}
                             disabled={updatingId === inquiry._id}
-                            className="text-sm border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="text-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 text-gray-700 dark:text-gray-300 transition-all font-medium"
                           >
                             <option value="new">New</option>
                             <option value="contacted">Contacted</option>
@@ -350,6 +350,61 @@ const InquiryManagement = () => {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y divide-gray-100">
+              {inquiries.map((inquiry) => (
+                <div key={inquiry._id} className="p-4 space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-bold text-gray-900">{inquiry.name}</div>
+                      <div className="text-xs text-gray-500">{inquiry.company || 'Private'}</div>
+                    </div>
+                    {getStatusBadge(inquiry.status)}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-500 block">Floor</span>
+                      <span className="font-medium">
+                        {inquiry.floorId ? `Floor ${inquiry.floorId.floorNumber}` : 'General'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Date</span>
+                      <span className="font-medium">{formatDate(inquiry.createdAt)}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <button
+                      onClick={() => {
+                        setSelectedInquiry(inquiry);
+                        setIsModalOpen(true);
+                      }}
+                      className="flex items-center space-x-2 text-blue-600 font-semibold text-sm"
+                    >
+                      <HiEye className="h-4 w-4" />
+                      <span>Details</span>
+                    </button>
+
+                    <select
+                      value={inquiry.status}
+                      onChange={(e) => handleStatusUpdateClick(inquiry._id, e.target.value)}
+                      disabled={updatingId === inquiry._id}
+                      className="text-xs border border-gray-300 rounded-lg px-2 py-1 bg-white"
+                    >
+                      <option value="new">New</option>
+                      <option value="contacted">Contacted</option>
+                      <option value="viewing_scheduled">Viewing Scheduled</option>
+                      <option value="offer_sent">Offer Sent</option>
+                      <option value="closed">Closed</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* Pagination */}
@@ -431,24 +486,24 @@ const InquiryManagement = () => {
                   <div>
                     <span className="text-sm font-medium text-gray-600">Floor</span>
                     <p className="text-gray-900">
-                      {selectedInquiry.floorId 
-                        ? `Floor ${selectedInquiry.floorId.floorNumber} - ${selectedInquiry.floorId.name}` 
+                      {selectedInquiry.floorId
+                        ? `Floor ${selectedInquiry.floorId.floorNumber} - ${selectedInquiry.floorId.name}`
                         : 'N/A'}
                     </p>
                   </div>
                   <div>
                     <span className="text-sm font-medium text-gray-600">Budget</span>
                     <p className="text-gray-900">
-                      {selectedInquiry.budget 
-                        ? `$${selectedInquiry.budget.toLocaleString()}` 
+                      {selectedInquiry.budget
+                        ? `$${selectedInquiry.budget.toLocaleString()}`
                         : 'Not specified'}
                     </p>
                   </div>
                   <div>
                     <span className="text-sm font-medium text-gray-600">Move-in Date</span>
                     <p className="text-gray-900">
-                      {selectedInquiry.moveInDate 
-                        ? formatDate(selectedInquiry.moveInDate) 
+                      {selectedInquiry.moveInDate
+                        ? formatDate(selectedInquiry.moveInDate)
                         : 'Flexible'}
                     </p>
                   </div>

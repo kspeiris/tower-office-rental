@@ -45,7 +45,7 @@ const FloorCard = ({ floor, viewMode = 'grid' }) => {
               </div>
             </div>
             <p className="text-gray-600 mb-4">{floor.description.substring(0, 150)}...</p>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
                 <div className="text-sm text-gray-500">Area</div>
@@ -123,35 +123,35 @@ const FloorCard = ({ floor, viewMode = 'grid' }) => {
       <div className="p-6">
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xl font-bold text-gray-900">Floor {floor.floorNumber}</h3>
-            <span className="text-2xl font-bold text-primary-600" aria-label={`Price: ${floor.formattedPrice}`}>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Floor {floor.floorNumber}</h3>
+            <span className="text-2xl font-bold text-primary-600 dark:text-primary-400" aria-label={`Price: ${floor.formattedPrice}`}>
               {floor.formattedPrice}
             </span>
           </div>
-          <h4 className="text-lg font-semibold text-gray-700 mb-2">{floor.name}</h4>
-          <p className="text-gray-600 line-clamp-2" title={floor.description}>
+          <h4 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">{floor.name}</h4>
+          <p className="text-gray-600 dark:text-gray-400 line-clamp-2" title={floor.description}>
             {floor.description}
           </p>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <div className="text-sm text-gray-500">Area</div>
-            <div className="font-semibold">{floor.area?.toLocaleString() || 'N/A'} sq ft</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Area</div>
+            <div className="font-semibold text-gray-900 dark:text-white">{floor.area?.toLocaleString() || 'N/A'} sq ft</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">Monthly</div>
-            <div className="font-semibold">
+            <div className="text-sm text-gray-500 dark:text-gray-400">Monthly</div>
+            <div className="font-semibold text-gray-900 dark:text-white">
               {floor.pricePerMonth ? `$${floor.pricePerMonth.toLocaleString()}/mo` : 'Contact'}
             </div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">Max Capacity</div>
-            <div className="font-semibold">{floor.maxCapacity || 'N/A'} people</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Max Capacity</div>
+            <div className="font-semibold text-gray-900 dark:text-white">{floor.maxCapacity || 'N/A'} people</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">View</div>
-            <div className="font-semibold capitalize">{floor.view || 'City'}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">View</div>
+            <div className="font-semibold capitalize text-gray-900 dark:text-white">{floor.view || 'City'}</div>
           </div>
         </div>
 

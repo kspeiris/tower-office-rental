@@ -283,35 +283,35 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-white"
+            className="text-white text-center md:text-left"
           >
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6 md:mb-8">
               <HiStar className="h-4 w-4 text-yellow-300 mr-2" aria-hidden="true" />
-              <span className="text-sm font-medium">Premium Grade A Building</span>
+              <span className="text-xs md:text-sm font-bold tracking-wide">PREMIUM GRADE A BUILDING</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              <span className="text-cyan-300">JFI Tower 3</span>
-              <br />
-              Where Innovation
-              <br />
-              Meets <span className="text-yellow-300">Excellence</span>
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-[1.1] md:leading-tight tracking-tight">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-300">JFI Tower 3</span>
+              <br className="hidden md:block" />
+              <span className="md:ml-0">Where Innovation</span>
+              <br className="hidden md:block" />
+              Meets <span className="text-yellow-300 underline decoration-blue-500/50 underline-offset-8">Excellence</span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mb-8">
+            <p className="text-lg md:text-2xl text-gray-200 max-w-2xl md:max-w-3xl mb-10 md:mb-12 leading-relaxed">
               A landmark commercial tower offering premium office spaces with cutting-edge
               amenities in the heart of the business district.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-center md:justify-start">
               <button
                 onClick={() => navigate('/floors')}
-                className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 transform hover:-translate-y-1 shadow-2xl shadow-blue-500/25 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2"
+                className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-2xl hover:from-blue-700 hover:to-cyan-600 transition-all duration-300 transform hover:-translate-y-1 shadow-2xl shadow-blue-500/40 flex items-center justify-center active:scale-95"
               >
                 <span>Explore Available Spaces</span>
                 <HiArrowRightCircle className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
@@ -319,12 +319,10 @@ const HomePage = () => {
 
               <button
                 onClick={() => navigate('/contact')}
-                className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900"
+                className="px-8 py-4 bg-white/10 backdrop-blur-md border-2 border-white/20 text-white font-bold rounded-2xl hover:bg-white/20 transition-all duration-300 flex items-center justify-center active:scale-95"
               >
-                <span className="flex items-center">
-                  <HiMapPin className="mr-3 h-6 w-6" aria-hidden="true" />
-                  Schedule Tour
-                </span>
+                <HiMapPin className="mr-3 h-6 w-6 text-cyan-400" aria-hidden="true" />
+                Schedule Tour
               </button>
             </div>
           </motion.div>
@@ -332,22 +330,23 @@ const HomePage = () => {
       </section>
 
       {/* Tower Stats */}
-      <section className="py-12 bg-gradient-to-b from-gray-900 to-gray-800">
+      <section className="py-12 md:py-16 bg-gray-900 border-y border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
             {towerStats.map((stat, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="text-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
+                className="flex flex-col items-center p-6 md:p-8 rounded-3xl bg-white/[0.03] backdrop-blur-sm border border-white/[0.05] hover:bg-white/[0.05] transition-colors"
               >
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white mb-4" aria-hidden="true">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 text-white flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20" aria-hidden="true">
                   {stat.icon}
                 </div>
-                <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
-                <div className="text-gray-300 text-sm font-medium">{stat.label}</div>
+                <div className="text-2xl md:text-3xl font-black text-white mb-1">{stat.value}</div>
+                <div className="text-gray-400 text-xs md:text-sm font-bold uppercase tracking-widest">{stat.label}</div>
               </motion.div>
             ))}
           </div>

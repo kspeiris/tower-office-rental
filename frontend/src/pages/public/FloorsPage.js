@@ -250,16 +250,16 @@ const FloorsPage = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {/* Status Filter */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wider">
                       Status
                     </label>
                     <select
                       value={filters.status}
                       onChange={(e) => handleFilterChange('status', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-500 transition-all bg-white"
                     >
                       {statusOptions.map(option => (
                         <option key={option.value} value={option.value}>
@@ -270,56 +270,53 @@ const FloorsPage = () => {
                   </div>
 
                   {/* Price Range */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Min Price
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="$"
-                      value={filters.minPrice}
-                      onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                    />
-                  </div>
+                  <div className="space-y-4 sm:space-y-0 sm:contents">
+                    <div className="sm:col-span-1">
+                      <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wider">
+                        Price Range ($)
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="number"
+                          placeholder="Min"
+                          value={filters.minPrice}
+                          onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-500 transition-all"
+                        />
+                        <span className="text-gray-400">−</span>
+                        <input
+                          type="number"
+                          placeholder="Max"
+                          value={filters.maxPrice}
+                          onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-500 transition-all"
+                        />
+                      </div>
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Max Price
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="$"
-                      value={filters.maxPrice}
-                      onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                    />
-                  </div>
-
-                  {/* Area Range */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Min Area (sq ft)
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="sq ft"
-                      value={filters.minArea}
-                      onChange={(e) => handleFilterChange('minArea', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Max Area (sq ft)
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="sq ft"
-                      value={filters.maxArea}
-                      onChange={(e) => handleFilterChange('maxArea', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                    />
+                    {/* Area Range */}
+                    <div className="sm:col-span-1">
+                      <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wider">
+                        Area Range (sq ft)
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="number"
+                          placeholder="Min"
+                          value={filters.minArea}
+                          onChange={(e) => handleFilterChange('minArea', e.target.value)}
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-500 transition-all"
+                        />
+                        <span className="text-gray-400">−</span>
+                        <input
+                          type="number"
+                          placeholder="Max"
+                          value={filters.maxArea}
+                          onChange={(e) => handleFilterChange('maxArea', e.target.value)}
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-500 transition-all"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </motion.div>
