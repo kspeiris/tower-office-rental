@@ -514,84 +514,143 @@ const SettingsPage = () => {
                       address: towerInfo?.address || '',
                       phone: towerInfo?.phone || '',
                       email: towerInfo?.email || '',
-                      website: towerInfo?.website || ''
+                      website: towerInfo?.website || '',
+                      landingPage: {
+                        hero: {
+                          title: towerInfo?.landingPage?.hero?.title || 'JFI Tower 3',
+                          subtitle: towerInfo?.landingPage?.hero?.subtitle || 'Where Innovation Meets Excellence',
+                          description: towerInfo?.landingPage?.hero?.description || ''
+                        },
+                        amenities: {
+                          tagline: towerInfo?.landingPage?.amenities?.tagline || 'WORLD-CLASS AMENITIES',
+                          title: towerInfo?.landingPage?.amenities?.title || 'Experience the Future of Work',
+                          description: towerInfo?.landingPage?.amenities?.description || ''
+                        }
+                      }
                     }}
                     onSubmit={handleCompanySubmit}
                     enableReinitialize={true}
                   >
                     {({ isSubmitting }) => (
-                      <Form className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="md:col-span-2">
-                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                              Tower Name
-                            </label>
-                            <Field
-                              type="text"
-                              name="name"
-                              className="input-field"
-                              placeholder="e.g. JFI Tower 3"
-                            />
-                          </div>
+                      <Form className="space-y-8">
+                        {/* Basic Info Section */}
+                        <div className="space-y-6">
+                          <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b dark:border-gray-800 pb-2">Basic Information</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="md:col-span-2">
+                              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                Tower Name
+                              </label>
+                              <Field
+                                type="text"
+                                name="name"
+                                className="input-field"
+                                placeholder="e.g. JFI Tower 3"
+                              />
+                            </div>
 
-                          <div className="md:col-span-2">
-                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                              Description
-                            </label>
-                            <Field
-                              as="textarea"
-                              name="description"
-                              rows="3"
-                              className="input-field"
-                              placeholder="Describe your property..."
-                            />
-                          </div>
+                            <div className="md:col-span-2">
+                              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                Description
+                              </label>
+                              <Field
+                                as="textarea"
+                                name="description"
+                                rows="3"
+                                className="input-field"
+                                placeholder="Describe your property..."
+                              />
+                            </div>
 
-                          <div className="md:col-span-2">
-                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                              Full Address
-                            </label>
-                            <Field
-                              type="text"
-                              name="address"
-                              className="input-field"
-                              placeholder="123 Business St, City, Country"
-                            />
-                          </div>
+                            <div className="md:col-span-2">
+                              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                Full Address
+                              </label>
+                              <Field
+                                type="text"
+                                name="address"
+                                className="input-field"
+                                placeholder="123 Business St, City, Country"
+                              />
+                            </div>
 
-                          <div>
-                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                              Contact Phone
-                            </label>
-                            <Field
-                              type="text"
-                              name="phone"
-                              className="input-field"
-                              placeholder="+1 234 567 890"
-                            />
-                          </div>
+                            <div>
+                              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                Contact Phone
+                              </label>
+                              <Field
+                                type="text"
+                                name="phone"
+                                className="input-field"
+                                placeholder="+1 234 567 890"
+                              />
+                            </div>
 
-                          <div>
-                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                              Contact Email
-                            </label>
-                            <Field
-                              type="email"
-                              name="email"
-                              className="input-field"
-                              placeholder="info@yourtower.com"
-                            />
+                            <div>
+                              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                Contact Email
+                              </label>
+                              <Field
+                                type="email"
+                                name="email"
+                                className="input-field"
+                                placeholder="info@yourtower.com"
+                              />
+                            </div>
                           </div>
                         </div>
 
-                        <div className="pt-6 border-t dark:border-gray-700">
+                        {/* Landing Page Content Section */}
+                        <div className="space-y-6 pt-6">
+                          <h3 className="text-lg font-bold text-gray-900 dark:text-white border-b dark:border-gray-800 pb-2">Home Page Content</h3>
+
+                          {/* Hero Section */}
+                          <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-2xl space-y-4">
+                            <h4 className="text-sm font-black uppercase tracking-widest text-primary-600">Hero Section</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Hero Title</label>
+                                <Field name="landingPage.hero.title" className="input-field" />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Hero Subtitle</label>
+                                <Field name="landingPage.hero.subtitle" className="input-field" />
+                              </div>
+                              <div className="md:col-span-2">
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Hero Description</label>
+                                <Field as="textarea" name="landingPage.hero.description" rows="2" className="input-field" />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Amenities Section */}
+                          <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-2xl space-y-4">
+                            <h4 className="text-sm font-black uppercase tracking-widest text-primary-600">Amenities Overview Section</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Section Tagline</label>
+                                <Field name="landingPage.amenities.tagline" className="input-field" />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Section Title</label>
+                                <Field name="landingPage.amenities.title" className="input-field" />
+                              </div>
+                              <div className="md:col-span-2">
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Section Description</label>
+                                <Field as="textarea" name="landingPage.amenities.description" rows="2" className="input-field" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="pt-8 border-t dark:border-gray-700">
                           <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="btn-primary inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            className="btn-primary w-full md:w-auto inline-flex items-center justify-center px-8 shadow-lg shadow-primary-500/20"
                           >
                             <HiSave className="mr-2 h-5 w-5" />
-                            {isSubmitting ? 'Saving...' : 'Update Tower Info'}
+                            {isSubmitting ? 'Saving Changes...' : 'Save All Property Settings'}
                           </button>
                         </div>
                       </Form>

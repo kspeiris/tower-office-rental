@@ -35,7 +35,7 @@ const towerInfoSchema = new mongoose.Schema({
     min: 1900,
     max: new Date().getFullYear()
   },
-  
+
   // Feature Images stored in Cloudinary
   featureImages: [{
     url: {
@@ -73,7 +73,7 @@ const towerInfoSchema = new mongoose.Schema({
       default: Date.now
     }
   }],
-  
+
   // YouTube Videos
   youtubeVideos: [{
     url: {
@@ -108,7 +108,7 @@ const towerInfoSchema = new mongoose.Schema({
       default: Date.now
     }
   }],
-  
+
   amenities: [{
     name: String,
     description: String,
@@ -118,34 +118,47 @@ const towerInfoSchema = new mongoose.Schema({
       enum: ['security', 'convenience', 'recreation', 'business']
     }
   }],
-  
+
   contactInfo: {
     phone: String,
     email: String,
     website: String,
     officeHours: String
   },
-  
+
   managementCompany: {
     name: String,
     contact: String,
     email: String
   },
-  
+
   parkingInfo: {
     totalSpaces: Number,
     visitorSpaces: Number,
     parkingFee: Number
   },
-  
+
   accessibility: [String],
-  
+
   sustainability: {
     leedCertified: Boolean,
     energyStar: Boolean,
     greenInitiatives: [String]
   },
-  
+
+  landingPage: {
+    hero: {
+      title: { type: String, default: 'JFI Tower 3' },
+      subtitle: { type: String, default: 'Where Innovation Meets Excellence' },
+      description: { type: String, default: 'A landmark commercial tower offering premium office spaces with cutting-edge amenities.' }
+    },
+    amenities: {
+      tagline: { type: String, default: 'WORLD-CLASS AMENITIES' },
+      title: { type: String, default: 'Experience the Future of Work' },
+      description: { type: String, default: 'Our comprehensive suite of amenities is designed to elevate productivity, foster collaboration, and enhance the work-life balance.' }
+    }
+  },
+
   lastUpdated: {
     type: Date,
     default: Date.now

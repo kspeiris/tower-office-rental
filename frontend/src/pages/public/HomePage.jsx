@@ -137,19 +137,26 @@ const HomePage = () => {
     { icon: <HiViewfinderCircle />, label: 'Virtual Tours', detail: '3D immersive experiences' }
   ];
 
+  // Derive dynamic images
+  const dynamicHeroImages = towerData?.featureImages?.filter(img => img.isHeroImage) || [];
+  const currentHeroImages = dynamicHeroImages.length > 0 ? dynamicHeroImages : towerImages;
+
+  // Find specific amenities image (one with category 'amenities' and highest order/isHeroImage)
+  const amenitiesImage = towerData?.featureImages?.find(img => img.category === 'amenities') || towerImages[3];
+
   // useEffect hooks
   useEffect(() => {
     fetchData();
   }, []);
 
   useEffect(() => {
-    if (!isCarouselPaused) {
+    if (!isCarouselPaused && currentHeroImages.length > 0) {
       const interval = setInterval(() => {
-        setActiveImage((prev) => (prev + 1) % towerImages.length);
+        setActiveImage((prev) => (prev + 1) % currentHeroImages.length);
       }, 6000);
       return () => clearInterval(interval);
     }
-  }, [isCarouselPaused, towerImages.length]);
+  }, [isCarouselPaused, currentHeroImages.length]);
 
   // Functions
   const fetchData = async () => {
@@ -162,7 +169,9 @@ const HomePage = () => {
       ]);
       setFeaturedFloors(floorsResponse.data.floors || []);
       setDashboardStats(statsResponse.data);
-      setTowerData(towerResponse.data.towerInfo || {});
+
+      const towerInfo = towerResponse.data.towerInfo || {};
+      setTowerData(towerInfo);
     } catch (error) {
       console.error('Error fetching data:', error);
       setDashboardStats({
@@ -177,11 +186,11 @@ const HomePage = () => {
   };
 
   const nextSlide = () => {
-    setActiveImage((prev) => (prev + 1) % towerImages.length);
+    setActiveImage((prev) => (prev + 1) % currentHeroImages.length);
   };
 
   const prevSlide = () => {
-    setActiveImage((prev) => (prev - 1 + towerImages.length) % towerImages.length);
+    setActiveImage((prev) => (prev - 1 + currentHeroImages.length) % currentHeroImages.length);
   };
 
   const handleCarouselKeyboard = (e) => {
@@ -225,8 +234,8 @@ const HomePage = () => {
             >
               <div className="relative w-full h-full">
                 <img
-                  src={towerImages[activeImage].url}
-                  alt={`${towerImages[activeImage].title} - ${towerImages[activeImage].description}`}
+                  src={currentHeroImages[activeImage]?.url}
+                  alt={`${currentHeroImages[activeImage]?.title || 'Tower'} - ${currentHeroImages[activeImage]?.description || ''}`}
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
@@ -247,7 +256,7 @@ const HomePage = () => {
             </button>
 
             <div className="flex space-x-2">
-              {towerImages.map((_, index) => (
+              {currentHeroImages.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setActiveImage(index)}
@@ -296,16 +305,29 @@ const HomePage = () => {
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-[1.1] md:leading-tight tracking-tight">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-300">JFI Tower 3</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-300">
+                {towerData?.landingPage?.hero?.title || 'JFI Tower 3'}
+              </span>
               <br className="hidden md:block" />
-              <span className="md:ml-0">Where Innovation</span>
-              <br className="hidden md:block" />
-              Meets <span className="text-yellow-300 underline decoration-blue-500/50 underline-offset-8">Excellence</span>
+              {towerData?.landingPage?.hero?.subtitle?.includes(' Meets ') ? (
+                <>
+                  <span className="md:ml-0">
+                    {towerData.landingPage.hero.subtitle.split(' Meets ')[0]}
+                  </span>
+                  <br className="hidden md:block" />
+                  Meets <span className="text-yellow-300 underline decoration-blue-500/50 underline-offset-8">
+                    {towerData.landingPage.hero.subtitle.split(' Meets ')[1]}
+                  </span>
+                </>
+              ) : (
+                <span className="md:ml-0 text-3xl sm:text-4xl">
+                  {towerData?.landingPage?.hero?.subtitle || 'Where Innovation Meets Excellence'}
+                </span>
+              )}
             </h1>
 
             <p className="text-lg md:text-2xl text-gray-200 max-w-2xl md:max-w-3xl mb-10 md:mb-12 leading-relaxed">
-              A landmark commercial tower offering premium office spaces with cutting-edge
-              amenities in the heart of the business district.
+              {towerData?.landingPage?.hero?.description || 'A landmark commercial tower offering premium office spaces with cutting-edge amenities in the heart of the business district.'}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-center md:justify-start">
@@ -465,16 +487,25 @@ const HomePage = () => {
             >
               <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
                 <HiTrophy className="h-4 w-4 text-yellow-300 mr-2" />
-                <span className="text-sm font-medium">WORLD-CLASS AMENITIES</span>
+                <span className="text-sm font-medium">
+                  {towerData?.landingPage?.amenities?.tagline || 'WORLD-CLASS AMENITIES'}
+                </span>
               </div>
 
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                Experience the <span className="text-cyan-300">Future</span> of Work
+                {towerData?.landingPage?.amenities?.title?.includes(' Future ') ? (
+                  <>
+                    {towerData.landingPage.amenities.title.split(' Future ')[0]}
+                    <span className="text-cyan-300"> Future </span>
+                    {towerData.landingPage.amenities.title.split(' Future ')[1]}
+                  </>
+                ) : (
+                  towerData?.landingPage?.amenities?.title || 'Experience the Future of Work'
+                )}
               </h2>
 
               <p className="text-gray-300 text-lg mb-8">
-                Our comprehensive suite of amenities is designed to elevate productivity,
-                foster collaboration, and enhance the work-life balance of every occupant.
+                {towerData?.landingPage?.amenities?.description || 'Our comprehensive suite of amenities is designed to elevate productivity, foster collaboration, and enhance the work-life balance of every occupant.'}
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -500,8 +531,8 @@ const HomePage = () => {
             >
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                 <img
-                  src={towerImages[2].url}
-                  alt="Executive Suite"
+                  src={amenitiesImage?.url}
+                  alt={amenitiesImage?.title || 'Executive Suite'}
                   className="w-full h-96 object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end">
