@@ -1,6 +1,7 @@
 {
   "name": "tower-office-rental-frontend",
   "version": "1.0.0",
+  "type": "module",
   "private": true,
   "dependencies": {
     "autoprefixer": "^10.4.15",
@@ -10,6 +11,7 @@
     "formik": "^2.4.2",
     "framer-motion": "^10.16.4",
     "postcss": "^8.4.29",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
@@ -31,6 +33,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.0",
+    "esbuild": "^0.21.5",
     "vite": "^5.0.0"
   },
   "browserslist": {
