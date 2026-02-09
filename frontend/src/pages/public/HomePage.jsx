@@ -299,40 +299,40 @@ const HomePage = () => {
             transition={{ duration: 0.8 }}
             className="text-white text-center md:text-left"
           >
-            <div className="inline-flex items-center px-4 md:px-6 py-2 md:py-2.5 rounded-full bg-blue-600/10 backdrop-blur-xl border border-blue-500/30 mb-8 md:mb-14 shadow-[0_0_30px_rgba(37,99,235,0.15)] group cursor-default">
+            <div className="inline-flex items-center px-4 md:px-6 py-2 md:py-2.5 rounded-full bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 backdrop-blur-xl border border-emerald-400/30 mb-8 md:mb-14 shadow-[0_0_40px_rgba(16,185,129,0.2)] group cursor-default">
               <span className="relative flex h-1.5 w-1.5 md:h-2 md:w-2 mr-3 md:mr-4">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 md:h-2 md:w-2 bg-blue-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 md:h-2 md:w-2 bg-emerald-400"></span>
               </span>
-              <span className="text-[9px] md:text-xs font-black tracking-[0.3em] md:tracking-[0.4em] uppercase text-blue-200/90 whitespace-nowrap">Grade-A Corporate Headquarters</span>
+              <span className="text-[9px] md:text-xs font-black tracking-[0.3em] md:tracking-[0.4em] uppercase text-emerald-100 whitespace-nowrap">Grade-A Corporate Headquarters</span>
             </div>
 
-            <h1 className="font-['Outfit'] text-4xl sm:text-6xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-black mb-8 md:mb-12 leading-[0.9] md:leading-[0.85] tracking-tighter text-white">
-              <span className="block mb-4 md:mb-6 filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.9)] md:drop-shadow-[0_20px_30px_rgba(0,0,0,0.9)]">
+            <h1 className="font-['Outfit'] text-4xl sm:text-6xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-black mb-8 md:mb-12 leading-[0.9] md:leading-[0.85] tracking-tighter">
+              <span className="block mb-4 md:mb-6 text-white filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.95)] md:drop-shadow-[0_24px_36px_rgba(0,0,0,0.95)]">
                 {towerData?.landingPage?.hero?.title || 'JFI Tower 3'}
               </span>
 
               {towerData?.landingPage?.hero?.subtitle?.includes(' Meets ') ? (
                 <div className="flex flex-col space-y-2 md:space-y-4">
                   <div className="flex items-center space-x-4 md:space-x-10">
-                    <span className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-indigo-600 leading-tight">
+                    <span className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-emerald-400 leading-tight filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]">
                       {towerData.landingPage.hero.subtitle.split(' Meets ')[0]}
                     </span>
-                    <span className="text-sm md:text-xl font-light text-white/30 italic tracking-[0.2em] md:tracking-[0.3em] uppercase hidden sm:block">Meets</span>
+                    <span className="text-sm md:text-xl font-light text-emerald-200/40 italic tracking-[0.2em] md:tracking-[0.3em] uppercase hidden sm:block">Meets</span>
                   </div>
-                  <span className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black text-white decoration-blue-500 underline underline-offset-[12px] md:underline-offset-[20px] decoration-[3px] md:decoration-[6px] drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
+                  <span className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black text-white decoration-emerald-400 underline underline-offset-[12px] md:underline-offset-[20px] decoration-[3px] md:decoration-[6px] drop-shadow-[0_12px_16px_rgba(0,0,0,0.7)]">
                     {towerData.landingPage.hero.subtitle.split(' Meets ')[1]}
                   </span>
                 </div>
               ) : (
-                <span className="text-2xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-400 leading-tight drop-shadow-[0_10px_10px_rgba(0,0,0,0.4)]">
+                <span className="text-2xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-emerald-400 leading-tight drop-shadow-[0_12px_16px_rgba(0,0,0,0.6)]">
                   {towerData?.landingPage?.hero?.subtitle || 'Where Innovation Meets Excellence'}
                 </span>
               )}
             </h1>
 
             <div className="max-w-4xl mb-10 md:mb-14">
-              <p className="text-base sm:text-lg md:text-xl lg:text-xl xl:text-2xl text-gray-200 leading-relaxed font-medium md:font-semibold filter drop-shadow-md border-l-2 md:border-l-4 border-blue-600 pl-4 md:pl-10">
+              <p className="text-base sm:text-lg md:text-xl lg:text-xl xl:text-2xl text-gray-100 leading-relaxed font-medium md:font-semibold filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] border-l-2 md:border-l-4 border-emerald-400 pl-4 md:pl-10 bg-gradient-to-r from-black/30 to-transparent py-2 backdrop-blur-sm">
                 {towerData?.landingPage?.hero?.description || 'A landmark commercial tower offering premium office spaces with cutting-edge amenities in the heart of the business district.'}
               </p>
             </div>
@@ -340,18 +340,18 @@ const HomePage = () => {
             <div className="flex flex-col sm:flex-row gap-4 md:gap-6 items-stretch md:items-center">
               <button
                 onClick={() => navigate('/floors')}
-                className="group relative px-6 md:px-10 py-4 md:py-5 bg-blue-600 text-white text-sm md:text-base font-black rounded-xl md:rounded-2xl transition-all duration-300 hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] shadow-[0_15px_30px_rgba(37,99,235,0.4)] flex items-center justify-center overflow-hidden"
+                className="group relative px-6 md:px-10 py-4 md:py-5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm md:text-base font-black rounded-xl md:rounded-2xl transition-all duration-300 hover:from-emerald-600 hover:to-teal-700 hover:scale-[1.02] active:scale-[0.98] shadow-[0_15px_35px_rgba(16,185,129,0.5)] hover:shadow-[0_20px_45px_rgba(16,185,129,0.6)] flex items-center justify-center overflow-hidden"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                 <span className="relative z-10">EXPLORE AVAILABLE SPACES</span>
                 <HiArrowRightCircle className="relative z-10 ml-2 md:ml-3 h-5 w-5 md:h-6 md:w-6 transform group-hover:translate-x-2 transition-transform" />
               </button>
 
               <button
                 onClick={() => navigate('/contact')}
-                className="px-6 md:px-10 py-4 md:py-5 bg-white/5 backdrop-blur-xl border-2 border-white/20 text-white text-sm md:text-base font-black rounded-xl md:rounded-2xl hover:bg-white/10 hover:border-white/40 transition-all duration-300 active:scale-[0.98] flex items-center justify-center"
+                className="px-6 md:px-10 py-4 md:py-5 bg-white/5 backdrop-blur-xl border-2 border-emerald-400/40 text-white text-sm md:text-base font-black rounded-xl md:rounded-2xl hover:bg-emerald-500/10 hover:border-emerald-400/60 transition-all duration-300 active:scale-[0.98] shadow-[0_8px_20px_rgba(16,185,129,0.15)] hover:shadow-[0_12px_30px_rgba(16,185,129,0.25)] flex items-center justify-center"
               >
-                <HiCalendar className="mr-2 md:mr-3 h-5 w-5 md:h-6 md:w-6 text-blue-400" />
+                <HiCalendar className="mr-2 md:mr-3 h-5 w-5 md:h-6 md:w-6 text-emerald-300" />
                 BOOK A PRIVATE TOUR
               </button>
             </div>
