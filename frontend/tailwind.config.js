@@ -39,7 +39,7 @@ export default {
             100: '#fcf7ed',
             200: '#f7ebcc',
             300: '#efd493',
-            400: '#e3b85ee',
+            400: '#e3b85e',
             500: '#d79f22', // Architectural Bronze/Gold
             600: '#b4811a',
             700: '#8f6517',
