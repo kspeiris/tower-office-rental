@@ -24,6 +24,7 @@ export default {
           50: '#f8fafc',
           100: '#f1f5f9',
           200: '#e2e8f0',
+          200: '#e2e8f0',
           300: '#cbd5e1',
           400: '#94a3b8',
           500: '#64748b',
@@ -31,6 +32,23 @@ export default {
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a',
+        },
+        accent: {
+          gold: {
+            50: '#fbfaf7',
+            100: '#f7f4ef',
+            200: '#ebe3d6',
+            300: '#decabd', // Muted champagne
+            400: '#caae8a', // Soft gold
+            500: '#b89264', // Architectural bronze
+            600: '#a67b51',
+            700: '#8c6442',
+            800: '#734f36',
+          },
+          navy: {
+            900: '#0a1128',
+            950: '#050a18',
+          }
         }
       },
       fontFamily: {
