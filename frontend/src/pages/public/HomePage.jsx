@@ -79,7 +79,7 @@ const HomePage = () => {
       icon: <HiBuildingOffice2 className="h-10 w-10" />,
       title: 'Premium Office Spaces',
       description: 'Modern workspaces designed for productivity and innovation.',
-      gradient: 'from-blue-600 to-cyan-500',
+      gradient: 'from-primary-600 to-teal-500',
       stats: '50+ Companies'
     },
     {
@@ -93,14 +93,14 @@ const HomePage = () => {
       icon: <HiCpuChip className="h-10 w-10" />,
       title: 'Smart Technology',
       description: 'IoT-enabled building with energy management systems.',
-      gradient: 'from-purple-600 to-pink-500',
+      gradient: 'from-teal-600 to-cyan-500',
       stats: 'AI Integrated'
     },
     {
       icon: <HiHomeModern className="h-10 w-10" />,
       title: 'Sustainable Design',
       description: 'LEED-certified building with green initiatives.',
-      gradient: 'from-green-600 to-lime-500',
+      gradient: 'from-emerald-600 to-teal-600',
       stats: 'Eco-Friendly'
     }
   ];
@@ -372,7 +372,7 @@ const HomePage = () => {
                 transition={{ delay: index * 0.1 }}
                 className="flex flex-col items-center p-6 md:p-8 rounded-3xl bg-white/[0.03] backdrop-blur-sm border border-white/[0.05] hover:bg-white/[0.05] transition-colors"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 text-white flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20" aria-hidden="true">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-600 to-teal-500 text-white flex items-center justify-center mb-4 shadow-lg shadow-primary-500/20" aria-hidden="true">
                   {stat.icon}
                 </div>
                 <div className="text-2xl md:text-3xl font-black text-white mb-1">{stat.value}</div>
@@ -387,12 +387,12 @@ const HomePage = () => {
       <section className="py-20 bg-gray-50 dark:bg-gray-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-cyan-100 to-blue-100 text-cyan-700 mb-4">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-primary-100 to-teal-100 dark:from-primary-900/20 dark:to-teal-900/20 text-primary-700 dark:text-primary-300 mb-4">
               <HiSparkles className="h-4 w-4 mr-2" />
               <span className="text-sm font-semibold">WHY CHOOSE US</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Unmatched <span className="text-blue-600">Premium</span> Experience
+              Unmatched <span className="text-primary-600 dark:text-primary-400">Premium</span> Experience
             </h2>
             <p className="text-gray-600 dark:text-gray-400 text-lg max-w-3xl mx-auto">
               JFI Tower 3 redefines commercial excellence with state-of-the-art facilities
@@ -417,7 +417,7 @@ const HomePage = () => {
                   </div>
                   <div className="text-lg font-bold text-gray-900 dark:text-white mb-2">{feature.title}</div>
                   <p className="text-gray-600 dark:text-gray-400 mb-4">{feature.description}</p>
-                  <div className="text-sm font-semibold text-blue-600 dark:text-blue-400">{feature.stats}</div>
+                  <div className="text-sm font-semibold text-primary-600 dark:text-primary-400">{feature.stats}</div>
                 </div>
               </motion.div>
             ))}
@@ -435,13 +435,13 @@ const HomePage = () => {
                 <span className="text-sm font-semibold">FEATURED SPACES</span>
               </div>
               <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                Premium <span className="text-blue-600">Available</span> Spaces
+                Premium <span className="text-primary-600 dark:text-primary-400">Available</span> Spaces
               </h2>
               <p className="text-gray-600 dark:text-gray-400">Exclusive office spaces with prime locations and premium finishes</p>
             </div>
             <Link
               to="/floors"
-              className="group mt-4 md:mt-0 inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1"
+              className="group mt-4 md:mt-0 inline-flex items-center text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 rounded px-2 py-1"
             >
               View all available spaces
               <HiArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform" aria-hidden="true" />
@@ -475,7 +475,7 @@ const HomePage = () => {
               <p className="text-gray-600 mb-6">Premium spaces are currently being prepared.</p>
               <button
                 onClick={() => navigate('/contact')}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 Get Notified First
               </button>
@@ -485,7 +485,7 @@ const HomePage = () => {
       </section>
 
       {/* Amenities Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white">
+      <section className="py-20 bg-gradient-to-br from-gray-900 via-primary-900 to-gray-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -504,7 +504,7 @@ const HomePage = () => {
                 {towerData?.landingPage?.amenities?.title?.includes(' Future ') ? (
                   <>
                     {towerData.landingPage.amenities.title.split(' Future ')[0]}
-                    <span className="text-cyan-300"> Future </span>
+                    <span className="text-primary-300"> Future </span>
                     {towerData.landingPage.amenities.title.split(' Future ')[1]}
                   </>
                 ) : (
@@ -519,7 +519,7 @@ const HomePage = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {amenities.map((amenity, index) => (
                   <div key={index} className="flex items-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center mr-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-r from-primary-500 to-teal-500 flex items-center justify-center mr-4">
                       {amenity.icon}
                     </div>
                     <div>
@@ -567,12 +567,12 @@ const HomePage = () => {
         <section className="py-20 bg-white dark:bg-gray-950">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 mb-4">
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-primary-100 to-teal-100 dark:from-primary-900/20 dark:to-teal-900/20 text-primary-700 dark:text-primary-300 mb-4">
                 <HiPhotograph className="h-4 w-4 mr-2" /> {/* FIXED: Changed from HiPhoto to HiPhotograph */}
                 <span className="text-sm font-semibold">TOWER GALLERY</span>
               </div>
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                Explore Our <span className="text-blue-600">Premium</span> Spaces
+                Explore Our <span className="text-primary-600 dark:text-primary-400">Premium</span> Spaces
               </h2>
               <p className="text-gray-600 dark:text-gray-400 text-lg max-w-3xl mx-auto">
                 Take a visual tour through our state-of-the-art facilities and modern workspaces
@@ -589,12 +589,12 @@ const HomePage = () => {
         <section className="py-20 bg-gray-50 dark:bg-gray-900/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-red-100 to-orange-100 text-red-700 mb-4">
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-primary-100 to-teal-100 dark:from-primary-900/20 dark:to-teal-900/20 text-primary-700 dark:text-primary-300 mb-4">
                 <HiPlayCircle className="h-4 w-4 mr-2" />
                 <span className="text-sm font-semibold">VIDEO TOURS</span>
               </div>
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                Experience the <span className="text-blue-600">Virtual</span> Tour
+                Experience the <span className="text-primary-600 dark:text-primary-400">Virtual</span> Tour
               </h2>
               <p className="text-gray-600 dark:text-gray-400 text-lg max-w-3xl mx-auto">
                 Watch our comprehensive video tours and see what makes JFI Tower 3 exceptional
@@ -607,7 +607,7 @@ const HomePage = () => {
       )}
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800">
+      <section className="py-20 bg-gradient-to-r from-primary-50 to-teal-50 dark:from-gray-900 dark:to-gray-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -615,7 +615,7 @@ const HomePage = () => {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-              Join the <span className="text-blue-600">Elite</span> Community
+              Join the <span className="text-primary-600 dark:text-primary-400">Elite</span> Community
             </h2>
             <p className="text-gray-600 dark:text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
               Be part of a curated ecosystem of industry leaders, innovators,
@@ -624,14 +624,14 @@ const HomePage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={() => navigate('/floors')}
-                className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 transform hover:-translate-y-1 shadow-xl flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="group px-8 py-4 bg-gradient-to-r from-primary-600 to-teal-600 text-white font-semibold rounded-xl hover:from-primary-700 hover:to-teal-700 transition-all duration-300 transform hover:-translate-y-1 shadow-xl flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
               >
                 View Available Spaces
                 <HiArrowRightCircle className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" aria-hidden="true" />
               </button>
               <button
                 onClick={() => navigate('/contact')}
-                className="px-8 py-4 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 font-semibold rounded-xl border-2 border-blue-200 dark:border-blue-900/50 hover:border-blue-300 dark:hover:border-blue-800 hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="px-8 py-4 bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 font-semibold rounded-xl border-2 border-primary-200 dark:border-primary-900/50 hover:border-primary-300 dark:hover:border-primary-800 hover:bg-primary-50 dark:hover:bg-gray-700 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
               >
                 Schedule a Tour
               </button>
