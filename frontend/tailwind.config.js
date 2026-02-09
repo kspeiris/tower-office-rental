@@ -9,21 +9,20 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6', // Modern Emerald
+          600: '#0d9488', // Architectural Teal
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
         },
         secondary: {
           50: '#f8fafc',
           100: '#f1f5f9',
-          200: '#e2e8f0',
           200: '#e2e8f0',
           300: '#cbd5e1',
           400: '#94a3b8',
@@ -31,23 +30,24 @@ export default {
           600: '#475569',
           700: '#334155',
           800: '#1e293b',
-          900: '#0f172a',
+          900: '#0f172a', // Midnight Navy
+          950: '#020617', // Deep Space
         },
         accent: {
           gold: {
-            50: '#fbfaf7',
-            100: '#f7f4ef',
-            200: '#ebe3d6',
-            300: '#decabd', // Muted champagne
-            400: '#caae8a', // Soft gold
-            500: '#b89264', // Architectural bronze
-            600: '#a67b51',
-            700: '#8c6442',
-            800: '#734f36',
+            50: '#fdfbf7',
+            100: '#fcf7ed',
+            200: '#f7ebcc',
+            300: '#efd493',
+            400: '#e3b85ee',
+            500: '#d79f22', // Architectural Bronze/Gold
+            600: '#b4811a',
+            700: '#8f6517',
+            800: '#735116',
           },
           navy: {
-            900: '#0a1128',
-            950: '#050a18',
+            900: '#0f172a',
+            950: '#020617',
           }
         }
       },

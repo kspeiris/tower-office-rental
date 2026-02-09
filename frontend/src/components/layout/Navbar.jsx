@@ -82,15 +82,15 @@ const Navbar = () => {
           <div className="flex items-center flex-shrink-0">
             <Link to="/" className="flex items-center space-x-3 group outline-none">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-lg blur opacity-20 group-hover:opacity-30 transition-opacity duration-200"></div>
-                <HiBuildingOffice className="h-10 w-10 text-blue-600 relative z-10 group-focus:ring-2 group-focus:ring-offset-2 group-focus:ring-blue-500 rounded" />
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg blur opacity-20 group-hover:opacity-30 transition-opacity duration-200"></div>
+                <HiBuildingOffice className="h-10 w-10 text-primary-600 relative z-10 group-focus:ring-2 group-focus:ring-offset-2 group-focus:ring-emerald-500 rounded" />
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   JFI Properties
                 </span>
                 <span className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
-                  Tower <span className="text-blue-600">Three</span>
+                  Tower <span className="text-primary-600 font-black">Three</span>
                 </span>
               </div>
             </Link>
@@ -106,9 +106,9 @@ const Navbar = () => {
                   to={item.path}
                   onMouseEnter={() => setHoveredItem(item.path)}
                   onMouseLeave={() => setHoveredItem(null)}
-                  className={`relative group px-4 py-2 rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isActive(item.path)
-                    ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/30'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  className={`relative group px-4 py-2 rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${isActive(item.path)
+                    ? 'text-primary-600 bg-primary-50 dark:bg-primary-900/30'
+                    : 'text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                     }`}
                 >
                   <div className="flex items-center space-x-2">
@@ -118,7 +118,7 @@ const Navbar = () => {
                   {isActive(item.path) && (
                     <motion.div
                       layoutId="active-indicator"
-                      className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full"
+                      className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
                       initial={false}
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     />
@@ -130,7 +130,7 @@ const Navbar = () => {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all active:scale-95 outline-none focus:ring-2 focus:ring-blue-500 ml-2"
+              className="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all active:scale-95 outline-none focus:ring-2 focus:ring-primary-500 ml-2"
               aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               <AnimatePresence mode="wait" initial={false}>
@@ -141,7 +141,7 @@ const Navbar = () => {
                   exit={{ rotate: 20, opacity: 0, scale: 0.5 }}
                   transition={{ duration: 0.2 }}
                 >
-                  {isDark ? <HiSun className="h-5 w-5 text-yellow-500" /> : <HiMoon className="h-5 w-5 text-blue-600" />}
+                  {isDark ? <HiSun className="h-5 w-5 text-amber-400" /> : <HiMoon className="h-5 w-5 text-primary-600" />}
                 </motion.div>
               </AnimatePresence>
             </button>
@@ -149,7 +149,7 @@ const Navbar = () => {
             {/* CTA Button */}
             <button
               onClick={() => navigate('/contact')}
-              className="ml-4 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-cyan-600 transition-all duration-200 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl active:scale-95 outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="ml-4 px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 transform hover:-translate-y-0.5 shadow-lg shadow-emerald-500/20 hover:shadow-xl active:scale-95 outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
               aria-label="Schedule a tour"
             >
               Schedule Tour
@@ -161,7 +161,7 @@ const Navbar = () => {
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 onMouseEnter={() => setDropdownOpen(true)}
                 onMouseLeave={() => setDropdownOpen(false)}
-                className="flex items-center space-x-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="flex items-center space-x-1 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                 aria-label="Admin menu"
                 aria-expanded={dropdownOpen}
               >
@@ -192,16 +192,16 @@ const Navbar = () => {
                       </div>
                       <Link
                         to="/admin/login"
-                        className="flex items-center justify-between px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-colors group outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+                        className="flex items-center justify-between px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors group outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset"
                         onClick={() => setDropdownOpen(false)}
                         role="menuitem"
                       >
                         <div className="font-medium">Portal Login</div>
-                        <div className="text-xs text-gray-400 group-hover:text-blue-500">→</div>
+                        <div className="text-xs text-gray-400 group-hover:text-primary-500">→</div>
                       </Link>
                       <Link
                         to="/admin/dashboard"
-                        className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-colors outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+                        className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset"
                         onClick={() => setDropdownOpen(false)}
                         role="menuitem"
                       >
@@ -221,18 +221,18 @@ const Navbar = () => {
               className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               aria-label="Toggle theme"
             >
-              {isDark ? <HiSun className="h-5 w-5 text-yellow-500" /> : <HiMoon className="h-5 w-5 text-blue-600" />}
+              {isDark ? <HiSun className="h-5 w-5 text-amber-400" /> : <HiMoon className="h-5 w-5 text-primary-600" />}
             </button>
             <button
               onClick={() => navigate('/contact')}
-              className="px-3 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-sm font-semibold rounded-lg hover:from-blue-700 hover:to-cyan-600 transition-all shadow-lg outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="px-3 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm font-bold rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all shadow-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
               aria-label="Schedule a tour on mobile"
             >
               Tour
             </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors focus:ring-2 focus:ring-blue-500"
+              className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 focus:outline-none p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors focus:ring-2 focus:ring-primary-500"
               aria-label="Toggle navigation menu"
               aria-expanded={isOpen}
             >
@@ -273,8 +273,8 @@ const Navbar = () => {
                 {/* Mobile Menu Header */}
                 <div className="flex items-center justify-between px-6 h-20 border-b border-gray-100 dark:border-gray-800">
                   <div className="flex items-center space-x-2">
-                    <HiBuildingOffice className="h-8 w-8 text-blue-600" />
-                    <span className="text-xl font-bold text-gray-900 dark:text-white">Tower <span className="text-blue-600">Three</span></span>
+                    <HiBuildingOffice className="h-8 w-8 text-primary-600" />
+                    <span className="text-xl font-bold text-gray-900 dark:text-white">Tower <span className="text-primary-600 font-black">Three</span></span>
                   </div>
                   <button
                     onClick={() => setIsOpen(false)}
@@ -293,9 +293,9 @@ const Navbar = () => {
                       <Link
                         key={item.path}
                         to={item.path}
-                        className={`flex items-center space-x-4 px-4 py-4 rounded-xl text-lg font-semibold transition-all ${active
-                          ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 translate-x-1'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'
+                        className={`flex items-center space-x-4 px-4 py-4 rounded-xl text-lg font-bold transition-all ${active
+                          ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30 translate-x-1'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary-600 dark:hover:text-primary-400'
                           }`}
                       >
                         <div className={`p-2 rounded-lg ${active ? 'bg-white/20' : 'bg-gray-100 dark:bg-gray-800'}`}>
@@ -313,13 +313,13 @@ const Navbar = () => {
                     <div className="grid grid-cols-2 gap-3 px-2">
                       <Link
                         to="/admin/login"
-                        className="flex flex-col items-center justify-center p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-all border border-transparent hover:border-blue-100 dark:hover:border-blue-900/50"
+                        className="flex flex-col items-center justify-center p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-600 dark:hover:text-primary-400 transition-all border border-transparent hover:border-primary-100 dark:hover:border-primary-900/50"
                       >
                         <span className="text-sm font-bold">Portal</span>
                       </Link>
                       <Link
                         to="/admin/dashboard"
-                        className="flex flex-col items-center justify-center p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-all border border-transparent hover:border-blue-100 dark:hover:border-blue-900/50"
+                        className="flex flex-col items-center justify-center p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-600 dark:hover:text-primary-400 transition-all border border-transparent hover:border-primary-100 dark:hover:border-primary-900/50"
                       >
                         <span className="text-sm font-bold">Dashboard</span>
                       </Link>
@@ -334,7 +334,7 @@ const Navbar = () => {
                       setIsOpen(false);
                       navigate('/contact');
                     }}
-                    className="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-2xl shadow-xl shadow-blue-500/20 flex items-center justify-center space-x-2 active:scale-[0.98] transition-transform"
+                    className="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-2xl shadow-xl shadow-emerald-500/20 flex items-center justify-center space-x-2 active:scale-[0.98] transition-transform"
                   >
                     <HiPhone className="h-5 w-5" />
                     <span>Schedule a Tour</span>

@@ -1,18 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  HiOfficeBuilding, 
-  HiPhone, 
-  HiMail, 
+import {
+  HiOfficeBuilding,
+  HiPhone,
+  HiMail,
   HiLocationMarker,
   HiArrowRight,
   HiGlobe
 } from 'react-icons/hi';
-import { 
-  FaFacebook, 
-  FaTwitter, 
-  FaLinkedin, 
-  FaInstagram 
+import {
+  FaFacebook,
+  FaTwitter,
+  FaLinkedin,
+  FaInstagram
 } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
@@ -21,7 +21,7 @@ import { motion } from 'framer-motion';
 // ============================================================================
 const FooterLink = ({ to, children, external = false }) => {
   const baseClass = "text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center group outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-1 py-0.5";
-  
+
   if (external) {
     return (
       <a href={to} target="_blank" rel="noopener noreferrer" className={baseClass}>
@@ -137,17 +137,17 @@ const Footer = () => {
           >
             <div className="flex items-center space-x-2 group outline-none focus-within:ring-2 focus-within:ring-primary-400 rounded-lg p-1">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-cyan-500 rounded-lg blur opacity-20 group-hover:opacity-30 transition-opacity duration-200"></div>
-                <HiOfficeBuilding className="h-8 w-8 text-primary-400 relative z-10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg blur opacity-20 group-hover:opacity-30 transition-opacity duration-200"></div>
+                <HiOfficeBuilding className="h-8 w-8 text-primary-500 relative z-10" />
               </div>
               <span className="text-2xl font-bold">
-                Tower<span className="text-primary-400">Space</span>
+                Tower<span className="text-primary-500">Space</span>
               </span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
               Premium office spaces in the heart of the city. Experience luxury, convenience, and productivity.
             </p>
-            
+
             {/* Social Links */}
             <div className="flex items-center space-x-3 pt-4">
               {socialLinks.map((social) => (
@@ -169,7 +169,7 @@ const Footer = () => {
             viewport={{ once: true }}
           >
             <h3 className="text-lg font-semibold mb-4 text-white flex items-center">
-              <span className="w-1 h-6 bg-gradient-to-b from-primary-500 to-cyan-500 rounded-full mr-3"></span>
+              <span className="w-1.5 h-6 bg-gradient-to-b from-emerald-500 to-teal-600 rounded-full mr-3"></span>
               Quick Links
             </h3>
             <ul className="space-y-3">
@@ -189,7 +189,7 @@ const Footer = () => {
             viewport={{ once: true }}
           >
             <h3 className="text-lg font-semibold mb-4 text-white flex items-center">
-              <span className="w-1 h-6 bg-gradient-to-b from-primary-500 to-cyan-500 rounded-full mr-3"></span>
+              <span className="w-1.5 h-6 bg-gradient-to-b from-emerald-500 to-teal-600 rounded-full mr-3"></span>
               Contact Info
             </h3>
             <ul className="space-y-3">
@@ -220,17 +220,17 @@ const Footer = () => {
             viewport={{ once: true }}
           >
             <h3 className="text-lg font-semibold mb-4 text-white flex items-center">
-              <span className="w-1 h-6 bg-gradient-to-b from-primary-500 to-cyan-500 rounded-full mr-3"></span>
+              <span className="w-1.5 h-6 bg-gradient-to-b from-emerald-500 to-teal-600 rounded-full mr-3"></span>
               Office Hours
             </h3>
             <ul className="space-y-3 text-sm">
               <li className="flex justify-between items-center group">
                 <span className="text-gray-400 group-hover:text-white transition-colors duration-200">Monday - Friday</span>
-                <span className="text-primary-400 font-semibold">9:00 AM - 6:00 PM</span>
+                <span className="text-primary-500 font-bold">9:00 AM - 6:00 PM</span>
               </li>
               <li className="flex justify-between items-center group">
                 <span className="text-gray-400 group-hover:text-white transition-colors duration-200">Saturday</span>
-                <span className="text-primary-400 font-semibold">10:00 AM - 4:00 PM</span>
+                <span className="text-primary-500 font-bold">10:00 AM - 4:00 PM</span>
               </li>
               <li className="flex justify-between items-center group">
                 <span className="text-gray-400 group-hover:text-white transition-colors duration-200">Sunday</span>
@@ -260,10 +260,10 @@ const Footer = () => {
           <p className="text-gray-400 text-sm text-center md:text-left">
             &copy; {currentYear} TowerSpace. All rights reserved.
           </p>
-          
+
           <div className="flex flex-wrap justify-center md:justify-end gap-6 text-sm">
-            <a 
-              href="#privacy" 
+            <a
+              href="#privacy"
               className="text-gray-400 hover:text-white transition-colors duration-200 outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1"
               onClick={(e) => {
                 e.preventDefault();
@@ -272,8 +272,8 @@ const Footer = () => {
             >
               Privacy Policy
             </a>
-            <a 
-              href="#terms" 
+            <a
+              href="#terms"
               className="text-gray-400 hover:text-white transition-colors duration-200 outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1"
               onClick={(e) => {
                 e.preventDefault();
@@ -282,8 +282,8 @@ const Footer = () => {
             >
               Terms of Service
             </a>
-            <a 
-              href="#sitemap" 
+            <a
+              href="#sitemap"
               className="text-gray-400 hover:text-white transition-colors duration-200 outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1"
               onClick={(e) => {
                 e.preventDefault();
