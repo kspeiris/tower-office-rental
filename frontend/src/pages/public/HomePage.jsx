@@ -307,25 +307,25 @@ const HomePage = () => {
               <span className="text-[9px] md:text-xs font-black tracking-[0.3em] md:tracking-[0.4em] uppercase text-emerald-100 whitespace-nowrap">Grade-A Corporate Headquarters</span>
             </div>
 
-            <h1 className="font-['Outfit'] text-4xl sm:text-6xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-black mb-8 md:mb-12 leading-[0.9] md:leading-[0.85] tracking-tighter">
+            <h1 className="font-['Outfit'] text-6xl sm:text-7xl md:text-7xl lg:text-8xl xl:text-9xl font-black mb-8 md:mb-12 leading-[0.9] md:leading-[0.85] tracking-tighter">
               <span className="block mb-4 md:mb-6 text-white filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.95)] md:drop-shadow-[0_24px_36px_rgba(0,0,0,0.95)]">
                 {towerData?.landingPage?.hero?.title || 'JFI Tower 3'}
               </span>
 
               {towerData?.landingPage?.hero?.subtitle?.includes(' Meets ') ? (
                 <div className="flex flex-col space-y-2 md:space-y-4">
-                  <div className="flex items-center space-x-4 md:space-x-10">
-                    <span className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-emerald-400 leading-tight filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]">
+                  <div className="flex items-center space-x-3 md:space-x-10">
+                    <span className="text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-emerald-400 leading-tight filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]">
                       {towerData.landingPage.hero.subtitle.split(' Meets ')[0]}
                     </span>
-                    <span className="text-sm md:text-xl font-light text-emerald-200/40 italic tracking-[0.2em] md:tracking-[0.3em] uppercase hidden sm:block">Meets</span>
+                    <span className="text-sm md:text-xl font-light text-emerald-200/40 italic tracking-[0.2em] md:tracking-[0.3em] uppercase block">Meets</span>
                   </div>
-                  <span className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black text-white decoration-emerald-400 underline underline-offset-[12px] md:underline-offset-[20px] decoration-[3px] md:decoration-[6px] drop-shadow-[0_12px_16px_rgba(0,0,0,0.7)]">
+                  <span className="text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black text-white decoration-emerald-400 underline underline-offset-[8px] md:underline-offset-[20px] decoration-[3px] md:decoration-[6px] drop-shadow-[0_12px_16px_rgba(0,0,0,0.7)]">
                     {towerData.landingPage.hero.subtitle.split(' Meets ')[1]}
                   </span>
                 </div>
               ) : (
-                <span className="text-2xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-emerald-400 leading-tight drop-shadow-[0_12px_16px_rgba(0,0,0,0.6)]">
+                <span className="text-3xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-300 to-emerald-400 leading-tight drop-shadow-[0_12px_16px_rgba(0,0,0,0.6)]">
                   {towerData?.landingPage?.hero?.subtitle || 'Where Innovation Meets Excellence'}
                 </span>
               )}

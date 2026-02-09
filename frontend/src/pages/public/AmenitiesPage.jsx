@@ -94,7 +94,7 @@ const AmenitiesPage = () => {
       </Helmet>
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-primary-600 to-primary-800 text-white py-20">
+      <section className="relative bg-gradient-to-r from-primary-600 to-primary-800 text-white pt-36 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -123,8 +123,8 @@ const AmenitiesPage = () => {
                 aria-pressed={selectedCategory === category}
                 aria-label={`Filter by ${category}`}
                 className={`px-4 py-2 rounded-full border transition-colors ${selectedCategory === category
-                    ? 'border-primary-600 bg-primary-600 text-white'
-                    : 'border-gray-300 dark:border-gray-700 hover:border-primary-600 dark:hover:border-primary-400 hover:text-primary-600 dark:hover:text-primary-400 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800'
+                  ? 'border-primary-600 bg-primary-600 text-white'
+                  : 'border-gray-300 dark:border-gray-700 hover:border-primary-600 dark:hover:border-primary-400 hover:text-primary-600 dark:hover:text-primary-400 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800'
                   }`}
               >
                 {category}
