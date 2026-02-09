@@ -158,17 +158,17 @@ const AdminDashboard = () => {
             <div className="card p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Occupancy & Revenue</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Last 30 days performance</p>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Inquiry Activity</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Daily inquiries for the last 30 days</p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Occupancy Rate:</span>
-                  <span className="text-lg font-bold text-primary-600 dark:text-primary-400" aria-label={`Occupancy rate is ${stats?.occupancyRate || 0} percent`}>
-                    {stats?.occupancyRate || 0}%
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Total Inquiries:</span>
+                  <span className="text-lg font-bold text-primary-600 dark:text-primary-400">
+                    {inquiryStats?.stats?.total || 0}
                   </span>
                 </div>
               </div>
-              <DashboardChart />
+              <DashboardChart data={inquiryStats?.last30Days} />
             </div>
           </div>
 

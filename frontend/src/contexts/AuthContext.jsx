@@ -159,6 +159,50 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updatePassword = async (passwordData) => {
+    try {
+      const response = await api.put('/auth/update-password', passwordData);
+
+      if (response.data.success) {
+        toast.success('Password updated successfully');
+        return { success: true };
+      }
+
+      const errorMsg = response.data.error || 'Password update failed';
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg };
+    } catch (error) {
+      console.error('Update password error:', error);
+      const errorMsg = error.response?.data?.error || 'Password update failed. Please try again.';
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg };
+    }
+  };
+
+  const updatePreferences = async (preferences) => {
+    try {
+      const response = await api.put('/auth/preferences', { preferences });
+
+      if (response.data.success) {
+        const updatedUser = response.data.user;
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+
+        toast.success('Preferences updated successfully');
+        return { success: true, user: updatedUser };
+      }
+
+      const errorMsg = response.data.error || 'Preferences update failed';
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg };
+    } catch (error) {
+      console.error('Update preferences error:', error);
+      const errorMsg = error.response?.data?.error || 'Preferences update failed. Please try again.';
+      toast.error(errorMsg);
+      return { success: false, error: errorMsg };
+    }
+  };
+
   const value = {
     user,
     isAuthenticated,
@@ -166,7 +210,9 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    updateProfile
+    updateProfile,
+    updatePassword,
+    updatePreferences
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

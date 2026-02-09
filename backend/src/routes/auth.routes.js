@@ -12,5 +12,7 @@ router.post('/login', authValidations.login, authController.login);
 router.post('/logout', auth, authController.logout);
 router.get('/profile', auth, authController.getProfile);
 router.put('/profile', auth, authController.updateProfile);
+router.put('/update-password', auth, authController.updatePassword);
+router.put('/preferences', auth, authController.updatePreferences);
 
 module.exports = router;

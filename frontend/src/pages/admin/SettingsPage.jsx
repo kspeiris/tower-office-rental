@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -15,11 +15,17 @@ import {
   HiEye,
   HiEyeOff,
   HiCheckCircle,
-  HiExclamationCircle
+  HiExclamationCircle,
+  HiUsers,
+  HiChartBar,
+  HiPlus,
+  HiX
 } from 'react-icons/hi';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import TowerMediaManager from '../../components/admin/TowerMediaManager';
+import { towerApi, adminApi } from '../../services/api';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 // ============================================================================
 // PASSWORD STRENGTH INDICATOR
@@ -55,8 +61,8 @@ const PasswordStrengthIndicator = ({ password }) => {
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Password Strength</span>
         <span className={`text-xs font-semibold ${strength.level <= 1 ? 'text-red-600' :
-            strength.level === 2 ? 'text-yellow-600' :
-              'text-green-600'
+          strength.level === 2 ? 'text-yellow-600' :
+            'text-green-600'
           }`}>
           {strength.label}
         </span>
@@ -110,19 +116,27 @@ const PasswordField = ({ label, name, showPassword, onToggle, error }) => {
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
+
 const SettingsPage = () => {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, updatePassword, updatePreferences } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
+  const [towerInfo, setTowerInfo] = useState(null);
+  const [loadingTower, setLoadingTower] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isProfileSaved, setIsProfileSaved] = useState(false);
+  const [showAddUser, setShowAddUser] = useState(false);
 
+  // Tabs - users only for super_admin
   const tabs = [
     { id: 'profile', label: 'Profile', icon: <HiUser /> },
     { id: 'security', label: 'Security', icon: <HiLockClosed /> },
     { id: 'company', label: 'Company', icon: <HiOfficeBuilding /> },
     { id: 'notifications', label: 'Notifications', icon: <HiBell /> },
+    ...(user?.role === 'super_admin' ? [{ id: 'users', label: 'Users', icon: <HiUsers /> }] : []),
     { id: 'media', label: 'Tower Media', icon: <HiPhotograph /> }
   ];
 
@@ -153,14 +167,10 @@ const SettingsPage = () => {
     try {
       const result = await updateProfile(values);
       if (result.success) {
-        toast.success('Profile updated successfully');
         setIsProfileSaved(true);
         setTimeout(() => setIsProfileSaved(false), 3000);
-      } else {
-        toast.error(result.message || 'Failed to update profile');
       }
     } catch (error) {
-      toast.error('Failed to update profile');
       console.error(error);
     } finally {
       setSubmitting(false);
@@ -169,23 +179,110 @@ const SettingsPage = () => {
 
   const handleSecuritySubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      // In a real app, this would call an API endpoint
-      // const response = await authApi.changePassword(values);
-      console.log('Security update:', values);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const result = await updatePassword({
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword
+      });
 
-      toast.success('Password updated successfully');
-      resetForm();
-      setShowCurrentPassword(false);
-      setShowNewPassword(false);
-      setShowConfirmPassword(false);
+      if (result.success) {
+        resetForm();
+        setShowCurrentPassword(false);
+        setShowNewPassword(false);
+        setShowConfirmPassword(false);
+      }
     } catch (error) {
-      toast.error(error.message || 'Failed to update password');
       console.error(error);
     } finally {
       setSubmitting(false);
     }
   };
+
+  const fetchTowerInfo = async () => {
+    try {
+      setLoadingTower(true);
+      const response = await towerApi.getInfo();
+      setTowerInfo(response.data.towerInfo);
+    } catch (error) {
+      console.error('Error fetching tower info:', error);
+      toast.error('Failed to load company information');
+    } finally {
+      setLoadingTower(false);
+    }
+  };
+
+  const handleCompanySubmit = async (values, { setSubmitting }) => {
+    try {
+      const response = await towerApi.updateInfo(values);
+      if (response.data) {
+        setTowerInfo(response.data.towerInfo);
+        toast.success('Company information updated successfully');
+      }
+    } catch (error) {
+      console.error('Error updating tower info:', error);
+      toast.error('Failed to update company information');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handlePreferenceToggle = async (key, value) => {
+    try {
+      const newPreferences = {
+        ...user.preferences,
+        [key]: value
+      };
+      await updatePreferences(newPreferences);
+    } catch (error) {
+      console.error('Error updating preferences:', error);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      setLoadingUsers(true);
+      const response = await adminApi.getUsers();
+      setUsers(response.data.users);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      toast.error('Failed to load users');
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const toggleUserStatus = async (userId, currentStatus) => {
+    try {
+      await adminApi.toggleUserStatus(userId, !currentStatus);
+      setUsers(users.map(u => u._id === userId ? { ...u, isActive: !currentStatus } : u));
+      toast.success(`User ${!currentStatus ? 'activated' : 'deactivated'} successfully`);
+    } catch (error) {
+      console.error('Error toggling user status:', error);
+      toast.error('Failed to update user status');
+    }
+  };
+
+  const handleAddUser = async (values, { setSubmitting, resetForm }) => {
+    try {
+      await adminApi.createUser(values);
+      toast.success('New administrator added successfully');
+      setShowAddUser(false);
+      resetForm();
+      fetchUsers();
+    } catch (error) {
+      console.error('Error adding user:', error);
+      toast.error(error.response?.data?.error || 'Failed to add administrator');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'company') {
+      fetchTowerInfo();
+    } else if (activeTab === 'users') {
+      fetchUsers();
+    }
+  }, [activeTab]);
 
   return (
     <>
@@ -208,8 +305,8 @@ const SettingsPage = () => {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${activeTab === tab.id
-                        ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 border-l-4 border-primary-700 font-bold'
-                        : 'text-gray-700 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 border-l-4 border-transparent'
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 border-l-4 border-primary-700 font-bold'
+                      : 'text-gray-700 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 border-l-4 border-transparent'
                       }`}
                   >
                     <span className="mr-3 text-lg">{tab.icon}</span>
@@ -400,14 +497,107 @@ const SettingsPage = () => {
                 transition={{ duration: 0.3 }}
                 className="card p-8"
               >
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Company Information</h2>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Manage your company details and branding.
-                </p>
-                <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center">
-                  <HiOfficeBuilding className="h-12 w-12 text-gray-400 dark:text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-600 dark:text-gray-400 font-medium">Company settings form coming soon</p>
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Company Information</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Manage your tower branding and contact details</p>
                 </div>
+
+                {loadingTower ? (
+                  <div className="flex justify-center py-12">
+                    <LoadingSpinner />
+                  </div>
+                ) : (
+                  <Formik
+                    initialValues={{
+                      name: towerInfo?.name || '',
+                      description: towerInfo?.description || '',
+                      address: towerInfo?.address || '',
+                      phone: towerInfo?.phone || '',
+                      email: towerInfo?.email || '',
+                      website: towerInfo?.website || ''
+                    }}
+                    onSubmit={handleCompanySubmit}
+                    enableReinitialize={true}
+                  >
+                    {({ isSubmitting }) => (
+                      <Form className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="md:col-span-2">
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                              Tower Name
+                            </label>
+                            <Field
+                              type="text"
+                              name="name"
+                              className="input-field"
+                              placeholder="e.g. JFI Tower 3"
+                            />
+                          </div>
+
+                          <div className="md:col-span-2">
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                              Description
+                            </label>
+                            <Field
+                              as="textarea"
+                              name="description"
+                              rows="3"
+                              className="input-field"
+                              placeholder="Describe your property..."
+                            />
+                          </div>
+
+                          <div className="md:col-span-2">
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                              Full Address
+                            </label>
+                            <Field
+                              type="text"
+                              name="address"
+                              className="input-field"
+                              placeholder="123 Business St, City, Country"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                              Contact Phone
+                            </label>
+                            <Field
+                              type="text"
+                              name="phone"
+                              className="input-field"
+                              placeholder="+1 234 567 890"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                              Contact Email
+                            </label>
+                            <Field
+                              type="email"
+                              name="email"
+                              className="input-field"
+                              placeholder="info@yourtower.com"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="pt-6 border-t dark:border-gray-700">
+                          <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="btn-primary inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                          >
+                            <HiSave className="mr-2 h-5 w-5" />
+                            {isSubmitting ? 'Saving...' : 'Update Tower Info'}
+                          </button>
+                        </div>
+                      </Form>
+                    )}
+                  </Formik>
+                )}
               </motion.div>
             )}
 
@@ -419,14 +609,229 @@ const SettingsPage = () => {
                 transition={{ duration: 0.3 }}
                 className="card p-8"
               >
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Notification Preferences</h2>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Configure how and when you receive notifications.
-                </p>
-                <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center">
-                  <HiBell className="h-12 w-12 text-gray-400 dark:text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-600 dark:text-gray-400 font-medium">Notification preferences coming soon</p>
+                <div className="mb-8">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Notification Preferences</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Configure how you want to be notified of new activity</p>
                 </div>
+
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800 transition-all hover:border-primary-100 dark:hover:border-primary-900/30">
+                    <div className="flex items-start space-x-4">
+                      <div className="bg-primary-100 dark:bg-primary-900/30 p-3 rounded-xl">
+                        <HiMail className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 dark:text-white">Email Notifications</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Receive an email whenever a new inquiry is submitted</p>
+                      </div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="sr-only peer"
+                        checked={user?.preferences?.emailNotifications ?? true}
+                        onChange={(e) => handlePreferenceToggle('emailNotifications', e.target.checked)}
+                      />
+                      <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+                    </label>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800 transition-all hover:border-primary-100 dark:hover:border-primary-900/30">
+                    <div className="flex items-start space-x-4">
+                      <div className="bg-primary-100 dark:bg-primary-900/30 p-3 rounded-xl">
+                        <HiChartBar className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 dark:text-white">Weekly Performance Reports</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Get a weekly summary of occupancy and inquiry statistics</p>
+                      </div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="sr-only peer"
+                        checked={user?.preferences?.weeklyReports ?? false}
+                        onChange={(e) => handlePreferenceToggle('weeklyReports', e.target.checked)}
+                      />
+                      <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/20 rounded-2xl">
+                  <div className="flex items-start space-x-3">
+                    <HiExclamationCircle className="h-6 w-6 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-bold text-blue-900 dark:text-blue-300 text-sm">Real-time Updates</h4>
+                      <p className="text-xs text-blue-700 dark:text-blue-400 mt-1 leading-relaxed">
+                        Email notifications are sent to your account email address: <span className="font-bold underline">{user?.email}</span>. You can change this in the Profile tab.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* User Management Settings */}
+            {activeTab === 'users' && user?.role === 'super_admin' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="card p-8"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">User Management</h2>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Manage admin access and user status</p>
+                  </div>
+                  <button
+                    onClick={() => setShowAddUser(!showAddUser)}
+                    className="btn-primary inline-flex items-center"
+                  >
+                    {showAddUser ? (
+                      <>
+                        <HiX className="mr-2 h-5 w-5" /> Cancel
+                      </>
+                    ) : (
+                      <>
+                        <HiPlus className="mr-2 h-5 w-5" /> Add New Admin
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <AnimatePresence>
+                  {showAddUser && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden mb-8"
+                    >
+                      <div className="p-6 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm transition-all hover:border-primary-100 dark:hover:border-primary-900/30">
+                        <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                          <HiUser className="mr-2 h-5 w-5 text-primary-600" />
+                          Add New Administrator
+                        </h3>
+                        <Formik
+                          initialValues={{
+                            username: '',
+                            email: '',
+                            password: '',
+                            role: 'admin'
+                          }}
+                          validationSchema={Yup.object({
+                            username: Yup.string().required('Required').min(3),
+                            email: Yup.string().email('Invalid email').required('Required'),
+                            password: Yup.string().required('Required').min(6),
+                            role: Yup.string().oneOf(['admin', 'super_admin']).required('Required')
+                          })}
+                          onSubmit={handleAddUser}
+                        >
+                          {({ isSubmitting }) => (
+                            <Form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-1">
+                                <label className="text-xs font-black uppercase tracking-widest text-gray-500">Username</label>
+                                <Field name="username" className="input-field" placeholder="john_doe" />
+                                <ErrorMessage name="username" component="div" className="text-red-500 text-[10px] font-bold" />
+                              </div>
+                              <div className="space-y-1">
+                                <label className="text-xs font-black uppercase tracking-widest text-gray-500">Email Address</label>
+                                <Field name="email" type="email" className="input-field" placeholder="john@example.com" />
+                                <ErrorMessage name="email" component="div" className="text-red-500 text-[10px] font-bold" />
+                              </div>
+                              <div className="space-y-1">
+                                <label className="text-xs font-black uppercase tracking-widest text-gray-500">Initial Password</label>
+                                <Field name="password" type="password" className="input-field" placeholder="••••••••" />
+                                <ErrorMessage name="password" component="div" className="text-red-500 text-[10px] font-bold" />
+                              </div>
+                              <div className="space-y-1">
+                                <label className="text-xs font-black uppercase tracking-widest text-gray-500">Role</label>
+                                <Field as="select" name="role" className="input-field">
+                                  <option value="admin">Admin</option>
+                                  <option value="super_admin">Super Admin</option>
+                                </Field>
+                                <ErrorMessage name="role" component="div" className="text-red-500 text-[10px] font-bold" />
+                              </div>
+                              <div className="md:col-span-2 pt-2">
+                                <button type="submit" disabled={isSubmitting} className="btn-primary w-full shadow-lg shadow-primary-500/20">
+                                  {isSubmitting ? 'Adding...' : 'Create Admin Account'}
+                                </button>
+                              </div>
+                            </Form>
+                          )}
+                        </Formik>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {loadingUsers ? (
+                  <div className="flex justify-center py-12">
+                    <LoadingSpinner />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b dark:border-gray-800 text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                          <th className="px-4 py-4">User</th>
+                          <th className="px-4 py-4">Role</th>
+                          <th className="px-4 py-4">Status</th>
+                          <th className="px-4 py-4 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y dark:divide-gray-800">
+                        {users.map((u) => (
+                          <tr key={u._id} className="group hover:bg-gray-50/50 dark:hover:bg-gray-800/20 transition-colors">
+                            <td className="px-4 py-4">
+                              <div className="flex items-center">
+                                <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold mr-3">
+                                  {u.username.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <p className="font-bold text-gray-900 dark:text-white">{u.username}</p>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400">{u.email}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-4">
+                              <span className={`inline-block px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${u.role === 'super_admin'
+                                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'
+                                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                }`}>
+                                {u.role.replace('_', ' ')}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4">
+                              <span className={`flex items-center text-xs font-bold ${u.isActive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                                }`}>
+                                <div className={`w-1.5 h-1.5 rounded-full mr-2 ${u.isActive ? 'bg-green-600' : 'bg-red-600'}`}></div>
+                                {u.isActive ? 'Active' : 'Inactive'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4 text-right">
+                              {u._id !== user._id && u.role !== 'super_admin' ? (
+                                <button
+                                  onClick={() => toggleUserStatus(u._id, u.isActive)}
+                                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${u.isActive
+                                    ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10'
+                                    : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/10'
+                                    }`}
+                                >
+                                  {u.isActive ? 'Deactivate' : 'Activate'}
+                                </button>
+                              ) : (
+                                <span className="text-xs text-gray-400 italic">Self / Restricted</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </motion.div>
             )}
 

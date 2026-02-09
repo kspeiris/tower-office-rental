@@ -74,4 +74,41 @@ router.patch('/users/:id/status', auth, isSuperAdmin, async (req, res) => {
   }
 });
 
+router.post('/users', auth, isSuperAdmin, async (req, res) => {
+  try {
+    const { username, email, password, role } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({
+      $or: [{ email }, { username }]
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        error: 'User with this email or username already exists'
+      });
+    }
+
+    const user = new User({
+      username,
+      email,
+      password,
+      role: role || 'admin',
+      isActive: true
+    });
+
+    await user.save();
+
+    const userResponse = user.toJSON();
+    delete userResponse.password;
+
+    res.status(201).json({
+      message: 'User created successfully',
+      user: userResponse
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;

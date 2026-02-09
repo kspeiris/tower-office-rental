@@ -255,3 +255,29 @@ function extractYoutubeId(url) {
 
   return null;
 }
+
+// Toggle hero status of a feature image
+exports.toggleHeroImage = async (req, res) => {
+  try {
+    const { publicId } = req.params;
+    const { isHeroImage } = req.body;
+
+    const towerInfo = await TowerInfo.findOneAndUpdate(
+      { 'featureImages.publicId': publicId },
+      { $set: { 'featureImages.$.isHeroImage': isHeroImage } },
+      { new: true }
+    );
+
+    if (!towerInfo) {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+
+    res.json({
+      message: `Image ${isHeroImage ? 'set as hero' : 'removed from hero'} successfully`,
+      image: towerInfo.featureImages.find(img => img.publicId === publicId)
+    });
+  } catch (error) {
+    console.error('❌ Toggle hero error:', error);
+    res.status(500).json({ error: error.message });
+  }
+};

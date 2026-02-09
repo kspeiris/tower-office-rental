@@ -179,3 +179,53 @@ exports.updateProfile = async (req, res) => {
     });
   }
 };
+
+exports.updatePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user._id);
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        error: 'Incorrect current password'
+      });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password updated successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+exports.updatePreferences = async (req, res) => {
+  try {
+    const { preferences } = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { preferences },
+      { new: true, runValidators: true }
+    );
+
+    res.json({
+      success: true,
+      message: 'Preferences updated successfully',
+      user: user.toJSON()
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};

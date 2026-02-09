@@ -96,6 +96,9 @@ export const inquiryApi = {
 // Admin API
 export const adminApi = {
   getDashboardStats: () => api.get('/admin/dashboard/stats'),
+  getUsers: () => api.get('/admin/users'),
+  toggleUserStatus: (id, isActive) => api.patch(`/admin/users/${id}/status`, { isActive }),
+  createUser: (userData) => api.post('/admin/users', userData),
 };
 
 // Tower API
@@ -109,6 +112,7 @@ export const towerApi = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   deleteFeatureImage: (publicId) => api.delete('/tower/feature-images', { data: { publicId } }),
+  toggleHeroImage: (publicId, isHeroImage) => api.patch(`/tower/feature-images/${publicId}/hero`, { isHeroImage }),
 
   // YouTube Videos
   addYoutubeVideo: (data) => api.post('/tower/youtube-videos', data),
@@ -121,6 +125,8 @@ export const authApi = {
   logout: () => api.post('/auth/logout'),
   getProfile: () => api.get('/auth/profile'),
   updateProfile: (data) => api.put('/auth/profile', data),
+  updatePassword: (data) => api.put('/auth/update-password', data),
+  updatePreferences: (data) => api.put('/auth/preferences', data),
 };
 
 export default api;

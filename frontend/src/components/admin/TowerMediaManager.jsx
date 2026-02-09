@@ -169,6 +169,17 @@ const TowerMediaManager = () => {
     }
   };
 
+  // Toggle hero status
+  const handleToggleHero = async (publicId, currentStatus) => {
+    try {
+      await towerApi.toggleHeroImage(publicId, !currentStatus);
+      toast.success(`Image ${!currentStatus ? 'set as hero' : 'removed from hero'} successfully`);
+      fetchTowerData();
+    } catch (error) {
+      toast.error('Failed to update hero status');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -402,12 +413,24 @@ const TowerMediaManager = () => {
                                 )}
                               </div>
                             </div>
-                            <button
-                              onClick={() => handleImageDelete(image.publicId)}
-                              className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-colors"
-                            >
-                              <HiTrash className="h-5 w-5" />
-                            </button>
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => handleToggleHero(image.publicId, image.isHeroImage)}
+                                className={`p-2 rounded-xl transition-all ${image.isHeroImage
+                                  ? 'text-green-600 bg-green-50 dark:bg-green-900/20'
+                                  : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                  }`}
+                                title={image.isHeroImage ? 'Remove from Hero' : 'Set as Hero'}
+                              >
+                                <HiPhotograph className="h-5 w-5" />
+                              </button>
+                              <button
+                                onClick={() => handleImageDelete(image.publicId)}
+                                className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-colors"
+                              >
+                                <HiTrash className="h-5 w-5" />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>

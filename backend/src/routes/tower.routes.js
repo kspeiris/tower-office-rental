@@ -20,6 +20,7 @@ router.put('/', auth, isAdmin, towerController.updateTowerInfo);
 // Feature Images Management
 router.post('/feature-images', auth, isAdmin, uploadSingle, towerController.uploadFeatureImage);
 router.delete('/feature-images', auth, isAdmin, towerController.deleteFeatureImage);
+router.patch('/feature-images/:publicId/hero', auth, isAdmin, towerController.toggleHeroImage);
 
 // YouTube Videos Management
 router.post('/youtube-videos', auth, isAdmin, towerController.addYoutubeVideo);
