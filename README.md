@@ -13,6 +13,7 @@
 
 > *Experience the perfect blend of architectural elegance and technological innovation.*
 
+![tower hero](towerhero.png)
 ---
 
 ## 💎 Design Identity: "Emerald & Gold"
@@ -58,7 +59,12 @@ The platform features a **"Corporate + Premium"** aesthetic, utilizing a sophist
 - **Cloudinary** - Optimized asset management for floor imagery
 - **JSON Web Tokens** - Secure stateless authentication
 
----
+## 🏗️ System Architecture
+
+TowerSpace is built on a modern, decoupled architecture designed for high performance and secure data handling.
+
+![tower architecture](towerarchi.png)
+
 
 ## ⚙️ Getting Started
 
