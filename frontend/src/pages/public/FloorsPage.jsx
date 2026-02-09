@@ -147,72 +147,73 @@ const FloorsPage = () => {
       </section>
 
       {/* Filters and Search */}
-      <section className="py-8 bg-white dark:bg-gray-950 border-b dark:border-gray-800">
+      <section className="py-6 md:py-8 bg-white dark:bg-gray-950 border-b dark:border-gray-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             {/* Search Bar */}
-            <div className="flex-1 max-w-2xl">
-              <div className="relative">
-                <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" aria-hidden="true" />
+            <div className="flex-1 w-full lg:max-w-2xl">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-primary-500/5 rounded-xl blur transition-opacity opacity-0 group-focus-within:opacity-100"></div>
+                <HiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-primary-500 transition-colors" aria-hidden="true" />
                 <input
                   type="text"
-                  placeholder="Search by floor number, name, or amenities..."
+                  placeholder="Search floors, names, or amenities..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium"
                   aria-label="Search office spaces"
                 />
               </div>
             </div>
 
             {/* Controls */}
-            <div className="flex items-center space-x-4">
-              {/* View Toggle */}
-              <div className="hidden md:flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1" role="group" aria-label="View mode">
+            <div className="flex items-center justify-between lg:justify-end space-x-3 w-full lg:w-auto">
+              {/* View Toggle (Hidden on small mobile) */}
+              <div className="hidden sm:flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-gray-700 shadow text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                  className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-gray-700 shadow-sm text-primary-600 dark:text-primary-400' : 'text-gray-500 hover:text-gray-700'}`}
                   aria-label="Grid view"
-                  aria-pressed={viewMode === 'grid'}
                 >
-                  <HiViewGrid className="h-5 w-5" aria-hidden="true" />
+                  <HiViewGrid className="h-5 w-5" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 rounded transition-all ${viewMode === 'list' ? 'bg-white dark:bg-gray-700 shadow text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                  className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white dark:bg-gray-700 shadow-sm text-primary-600 dark:text-primary-400' : 'text-gray-500 hover:text-gray-700'}`}
                   aria-label="List view"
-                  aria-pressed={viewMode === 'list'}
                 >
-                  <HiViewList className="h-5 w-5" aria-hidden="true" />
+                  <HiViewList className="h-5 w-5" />
                 </button>
               </div>
 
               {/* Sort Select */}
-              <select
-                value={`${filters.sortBy}:${filters.sortOrder}`}
-                onChange={(e) => {
-                  const [sortBy, sortOrder] = e.target.value.split(':');
-                  handleFilterChange('sortBy', sortBy);
-                  handleFilterChange('sortOrder', sortOrder);
-                }}
-                className="border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
-              >
-                {sortOptions.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+              <div className="flex-1 lg:flex-initial">
+                <select
+                  value={`${filters.sortBy}:${filters.sortOrder}`}
+                  onChange={(e) => {
+                    const [sortBy, sortOrder] = e.target.value.split(':');
+                    handleFilterChange('sortBy', sortBy);
+                    handleFilterChange('sortOrder', sortOrder);
+                  }}
+                  className="w-full border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium transition-all"
+                >
+                  {sortOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               {/* Filter Toggle */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                className={`flex items-center space-x-2 px-5 py-3 rounded-xl font-bold transition-all ${showFilters || activeFiltersCount > 0 ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/30' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200'}`}
               >
                 <HiFilter className="h-5 w-5" />
-                <span>Filters</span>
+                <span className="hidden sm:inline">Filters</span>
                 {activeFiltersCount > 0 && (
-                  <span className="bg-white text-primary-600 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="bg-white text-primary-600 text-[10px] font-black rounded-full h-5 w-5 flex items-center justify-center">
                     {activeFiltersCount}
                   </span>
                 )}
@@ -224,42 +225,43 @@ const FloorsPage = () => {
           <AnimatePresence>
             {showFilters && (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mt-4 border dark:border-gray-800 rounded-lg p-6 bg-gray-50 dark:bg-gray-900/50"
+                initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                className="mt-6 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 md:p-8 bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur-md shadow-xl overflow-hidden relative"
               >
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold flex items-center text-gray-900 dark:text-white">
-                    <HiAdjustments className="mr-2 h-5 w-5" />
-                    Filters
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-600 via-cyan-500 to-primary-600"></div>
+                <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-xl font-black flex items-center text-gray-900 dark:text-white uppercase tracking-tighter italic">
+                    <HiAdjustments className="mr-3 h-6 w-6 text-primary-500" />
+                    Refine Options
                   </h3>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-6">
                     <button
                       onClick={clearFilters}
-                      className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
+                      className="text-sm font-bold text-primary-600 hover:text-primary-700 underline underline-offset-4"
                     >
-                      Clear all
+                      Reset All
                     </button>
                     <button
                       onClick={() => setShowFilters(false)}
-                      className="text-gray-500 hover:text-gray-700"
+                      className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
                     >
-                      <HiX className="h-5 w-5" />
+                      <HiX className="h-5 w-5 text-gray-500" />
                     </button>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {/* Status Filter */}
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wider">
-                      Status
+                  <div className="space-y-3">
+                    <label className="text-xs font-black text-gray-500 uppercase tracking-widest pl-1">
+                      Space Status
                     </label>
                     <select
                       value={filters.status}
                       onChange={(e) => handleFilterChange('status', e.target.value)}
-                      className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-500 transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                      className="w-full border-2 border-transparent bg-white dark:bg-gray-800 rounded-xl px-5 py-4 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all text-gray-900 dark:text-gray-100 font-bold shadow-sm"
                     >
                       {statusOptions.map(option => (
                         <option key={option.value} value={option.value}>
@@ -270,52 +272,50 @@ const FloorsPage = () => {
                   </div>
 
                   {/* Price Range */}
-                  <div className="space-y-4 sm:space-y-0 sm:contents">
-                    <div className="sm:col-span-1">
-                      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wider">
-                        Price Range ($)
-                      </label>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="number"
-                          placeholder="Min"
-                          value={filters.minPrice}
-                          onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                          className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-500 transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-                        />
-                        <span className="text-gray-400">−</span>
-                        <input
-                          type="number"
-                          placeholder="Max"
-                          value={filters.maxPrice}
-                          onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                          className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-500 transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-                        />
-                      </div>
+                  <div className="space-y-3">
+                    <label className="text-xs font-black text-gray-500 uppercase tracking-widest pl-1">
+                      Budget Range ($)
+                    </label>
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={filters.minPrice}
+                        onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                        className="w-full border-2 border-transparent bg-white dark:bg-gray-800 rounded-xl px-4 py-4 focus:border-primary-500 transition-all font-bold shadow-sm"
+                      />
+                      <span className="text-gray-400">—</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={filters.maxPrice}
+                        onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                        className="w-full border-2 border-transparent bg-white dark:bg-gray-800 rounded-xl px-4 py-4 focus:border-primary-500 transition-all font-bold shadow-sm"
+                      />
                     </div>
+                  </div>
 
-                    {/* Area Range */}
-                    <div className="sm:col-span-1">
-                      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wider">
-                        Area Range (sq ft)
-                      </label>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="number"
-                          placeholder="Min"
-                          value={filters.minArea}
-                          onChange={(e) => handleFilterChange('minArea', e.target.value)}
-                          className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-500 transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-                        />
-                        <span className="text-gray-400">−</span>
-                        <input
-                          type="number"
-                          placeholder="Max"
-                          value={filters.maxArea}
-                          onChange={(e) => handleFilterChange('maxArea', e.target.value)}
-                          className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-500 transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-                        />
-                      </div>
+                  {/* Area Range */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-black text-gray-500 uppercase tracking-widest pl-1">
+                      Area Coverage (SQ FT)
+                    </label>
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={filters.minArea}
+                        onChange={(e) => handleFilterChange('minArea', e.target.value)}
+                        className="w-full border-2 border-transparent bg-white dark:bg-gray-800 rounded-xl px-4 py-4 focus:border-primary-500 transition-all font-bold shadow-sm"
+                      />
+                      <span className="text-gray-400">—</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={filters.maxArea}
+                        onChange={(e) => handleFilterChange('maxArea', e.target.value)}
+                        className="w-full border-2 border-transparent bg-white dark:bg-gray-800 rounded-xl px-4 py-4 focus:border-primary-500 transition-all font-bold shadow-sm"
+                      />
                     </div>
                   </div>
                 </div>

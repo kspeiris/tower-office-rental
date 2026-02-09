@@ -26,7 +26,7 @@ import {
   HiCloudArrowUp,
   HiHomeModern
 } from 'react-icons/hi2';
-import { HiPhotograph } from 'react-icons/hi';  // FIXED: Added HiPhotograph from hi
+import { HiPhotograph, HiCalendar } from 'react-icons/hi';
 import { floorApi, adminApi, towerApi } from '../../services/api';
 import FloorCard from '../../components/public/FloorCard';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -299,52 +299,60 @@ const HomePage = () => {
             transition={{ duration: 0.8 }}
             className="text-white text-center md:text-left"
           >
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6 md:mb-8">
-              <HiStar className="h-4 w-4 text-yellow-300 mr-2" aria-hidden="true" />
-              <span className="text-xs md:text-sm font-bold tracking-wide">PREMIUM GRADE A BUILDING</span>
+            <div className="inline-flex items-center px-4 md:px-6 py-2 md:py-2.5 rounded-full bg-blue-600/10 backdrop-blur-xl border border-blue-500/30 mb-8 md:mb-14 shadow-[0_0_30px_rgba(37,99,235,0.15)] group cursor-default">
+              <span className="relative flex h-1.5 w-1.5 md:h-2 md:w-2 mr-3 md:mr-4">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 md:h-2 md:w-2 bg-blue-500"></span>
+              </span>
+              <span className="text-[9px] md:text-xs font-black tracking-[0.3em] md:tracking-[0.4em] uppercase text-blue-200/90 whitespace-nowrap">Grade-A Corporate Headquarters</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-[1.1] md:leading-tight tracking-tight">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-300">
+            <h1 className="font-['Outfit'] text-4xl sm:text-6xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-black mb-8 md:mb-12 leading-[0.9] md:leading-[0.85] tracking-tighter text-white">
+              <span className="block mb-4 md:mb-6 filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.9)] md:drop-shadow-[0_20px_30px_rgba(0,0,0,0.9)]">
                 {towerData?.landingPage?.hero?.title || 'JFI Tower 3'}
               </span>
-              <br className="hidden md:block" />
+
               {towerData?.landingPage?.hero?.subtitle?.includes(' Meets ') ? (
-                <>
-                  <span className="md:ml-0">
-                    {towerData.landingPage.hero.subtitle.split(' Meets ')[0]}
-                  </span>
-                  <br className="hidden md:block" />
-                  Meets <span className="text-yellow-300 underline decoration-blue-500/50 underline-offset-8">
+                <div className="flex flex-col space-y-2 md:space-y-4">
+                  <div className="flex items-center space-x-4 md:space-x-10">
+                    <span className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-indigo-600 leading-tight">
+                      {towerData.landingPage.hero.subtitle.split(' Meets ')[0]}
+                    </span>
+                    <span className="text-sm md:text-xl font-light text-white/30 italic tracking-[0.2em] md:tracking-[0.3em] uppercase hidden sm:block">Meets</span>
+                  </div>
+                  <span className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black text-white decoration-blue-500 underline underline-offset-[12px] md:underline-offset-[20px] decoration-[3px] md:decoration-[6px] drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
                     {towerData.landingPage.hero.subtitle.split(' Meets ')[1]}
                   </span>
-                </>
+                </div>
               ) : (
-                <span className="md:ml-0 text-3xl sm:text-4xl">
+                <span className="text-2xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-400 leading-tight drop-shadow-[0_10px_10px_rgba(0,0,0,0.4)]">
                   {towerData?.landingPage?.hero?.subtitle || 'Where Innovation Meets Excellence'}
                 </span>
               )}
             </h1>
 
-            <p className="text-lg md:text-2xl text-gray-200 max-w-2xl md:max-w-3xl mb-10 md:mb-12 leading-relaxed">
-              {towerData?.landingPage?.hero?.description || 'A landmark commercial tower offering premium office spaces with cutting-edge amenities in the heart of the business district.'}
-            </p>
+            <div className="max-w-4xl mb-10 md:mb-14">
+              <p className="text-base sm:text-lg md:text-xl lg:text-xl xl:text-2xl text-gray-200 leading-relaxed font-medium md:font-semibold filter drop-shadow-md border-l-2 md:border-l-4 border-blue-600 pl-4 md:pl-10">
+                {towerData?.landingPage?.hero?.description || 'A landmark commercial tower offering premium office spaces with cutting-edge amenities in the heart of the business district.'}
+              </p>
+            </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-center md:justify-start">
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 items-stretch md:items-center">
               <button
                 onClick={() => navigate('/floors')}
-                className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-2xl hover:from-blue-700 hover:to-cyan-600 transition-all duration-300 transform hover:-translate-y-1 shadow-2xl shadow-blue-500/40 flex items-center justify-center active:scale-95"
+                className="group relative px-6 md:px-10 py-4 md:py-5 bg-blue-600 text-white text-sm md:text-base font-black rounded-xl md:rounded-2xl transition-all duration-300 hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] shadow-[0_15px_30px_rgba(37,99,235,0.4)] flex items-center justify-center overflow-hidden"
               >
-                <span>Explore Available Spaces</span>
-                <HiArrowRightCircle className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                <span className="relative z-10">EXPLORE AVAILABLE SPACES</span>
+                <HiArrowRightCircle className="relative z-10 ml-2 md:ml-3 h-5 w-5 md:h-6 md:w-6 transform group-hover:translate-x-2 transition-transform" />
               </button>
 
               <button
                 onClick={() => navigate('/contact')}
-                className="px-8 py-4 bg-white/10 backdrop-blur-md border-2 border-white/20 text-white font-bold rounded-2xl hover:bg-white/20 transition-all duration-300 flex items-center justify-center active:scale-95"
+                className="px-6 md:px-10 py-4 md:py-5 bg-white/5 backdrop-blur-xl border-2 border-white/20 text-white text-sm md:text-base font-black rounded-xl md:rounded-2xl hover:bg-white/10 hover:border-white/40 transition-all duration-300 active:scale-[0.98] flex items-center justify-center"
               >
-                <HiMapPin className="mr-3 h-6 w-6 text-cyan-400" aria-hidden="true" />
-                Schedule Tour
+                <HiCalendar className="mr-2 md:mr-3 h-5 w-5 md:h-6 md:w-6 text-blue-400" />
+                BOOK A PRIVATE TOUR
               </button>
             </div>
           </motion.div>
