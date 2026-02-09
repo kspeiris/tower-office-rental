@@ -41,33 +41,44 @@ app.use(
 /**
  * ✅ CORS (must be BEFORE rateLimit)
  * Fixes: AxiosError Network Error / CORS blocked from Vercel
+ *
+ * Supports:
+ * - Localhost dev
+ * - Your production Vercel domain
+ * - Any Vercel preview deployment (*.vercel.app)
+ * - Optional FRONTEND_URL env var from Render
  */
-const allowedOrigins = [
+const allowedOrigins = new Set([
   'http://localhost:3000',
   'http://localhost:5173',
   'http://localhost:5174',
   'http://127.0.0.1:5173',
   'http://127.0.0.1:5174',
-];
 
-// Add FRONTEND_URL (Vercel) from environment if provided
+  // ✅ Add your Vercel production domain here (important)
+  'https://tower-office-rental-jgdl.vercel.app',
+]);
+
+// Add FRONTEND_URL (Vercel/custom domain) from environment if provided
 if (process.env.FRONTEND_URL) {
-  const clean = process.env.FRONTEND_URL.replace(/\/$/, '');
-  allowedOrigins.push(clean);
-  allowedOrigins.push(`${clean}/`);
+  allowedOrigins.add(process.env.FRONTEND_URL.replace(/\/$/, ''));
 }
 
 app.use(
   cors({
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
       // Allow requests with no origin (curl, Postman, server-to-server)
       if (!origin) return callback(null, true);
 
-      const cleanOrigin = origin.replace(/\/$/, '');
-      const isAllowed =
-        allowedOrigins.includes(origin) || allowedOrigins.includes(cleanOrigin);
+      const clean = origin.replace(/\/$/, '');
 
-      if (isAllowed) return callback(null, true);
+      // ✅ Exact allow-list match
+      if (allowedOrigins.has(clean)) return callback(null, true);
+
+      // ✅ Allow any Vercel preview deployment: https://xxxx.vercel.app
+      if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(clean)) {
+        return callback(null, true);
+      }
 
       console.log('❌ CORS blocked for origin:', origin);
       return callback(new Error('Not allowed by CORS'));
@@ -78,7 +89,7 @@ app.use(
   })
 );
 
-// Optional: ensure preflight always responds
+// Ensure preflight always responds
 app.options('*', cors());
 
 /**
