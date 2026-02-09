@@ -511,9 +511,18 @@ const SettingsPage = () => {
                     initialValues={{
                       name: towerInfo?.name || '',
                       description: towerInfo?.description || '',
-                      address: towerInfo?.address || '',
-                      phone: towerInfo?.phone || '',
-                      email: towerInfo?.email || '',
+                      address: {
+                        street: towerInfo?.address?.street || '',
+                        city: towerInfo?.address?.city || '',
+                        state: towerInfo?.address?.state || '',
+                        zipCode: towerInfo?.address?.zipCode || '',
+                        country: towerInfo?.address?.country || ''
+                      },
+                      contactInfo: {
+                        phone: towerInfo?.contactInfo?.phone || '',
+                        email: towerInfo?.contactInfo?.email || '',
+                        officeHours: towerInfo?.contactInfo?.officeHours || ''
+                      },
                       website: towerInfo?.website || '',
                       landingPage: {
                         hero: {
@@ -562,16 +571,26 @@ const SettingsPage = () => {
                               />
                             </div>
 
+                            {/* Address Fields */}
                             <div className="md:col-span-2">
-                              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                Full Address
-                              </label>
-                              <Field
-                                type="text"
-                                name="address"
-                                className="input-field"
-                                placeholder="123 Business St, City, Country"
-                              />
+                              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Address</label>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="md:col-span-2">
+                                  <Field type="text" name="address.street" className="input-field" placeholder="Street Address" />
+                                </div>
+                                <div>
+                                  <Field type="text" name="address.city" className="input-field" placeholder="City" />
+                                </div>
+                                <div>
+                                  <Field type="text" name="address.state" className="input-field" placeholder="State/Province" />
+                                </div>
+                                <div>
+                                  <Field type="text" name="address.zipCode" className="input-field" placeholder="Zip/Postal Code" />
+                                </div>
+                                <div>
+                                  <Field type="text" name="address.country" className="input-field" placeholder="Country" />
+                                </div>
+                              </div>
                             </div>
 
                             <div>
@@ -580,7 +599,7 @@ const SettingsPage = () => {
                               </label>
                               <Field
                                 type="text"
-                                name="phone"
+                                name="contactInfo.phone"
                                 className="input-field"
                                 placeholder="+1 234 567 890"
                               />
@@ -592,9 +611,21 @@ const SettingsPage = () => {
                               </label>
                               <Field
                                 type="email"
-                                name="email"
+                                name="contactInfo.email"
                                 className="input-field"
                                 placeholder="info@yourtower.com"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                Office Hours
+                              </label>
+                              <Field
+                                type="text"
+                                name="contactInfo.officeHours"
+                                className="input-field"
+                                placeholder="Mon-Fri: 9AM - 6PM"
                               />
                             </div>
                           </div>

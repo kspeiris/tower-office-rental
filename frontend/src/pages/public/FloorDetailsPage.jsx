@@ -14,13 +14,14 @@ import {
   HiChevronLeft,
   HiChevronRight
 } from 'react-icons/hi';
-import { floorApi } from '../../services/api';
+import { floorApi, towerApi } from '../../services/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import toast from 'react-hot-toast';
 
 const FloorDetailsPage = () => {
   const { id } = useParams();
   const [floor, setFloor] = useState(null);
+  const [towerData, setTowerData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imageError, setImageError] = useState(false);
@@ -33,10 +34,16 @@ const FloorDetailsPage = () => {
   const fetchFloorDetails = async () => {
     try {
       setLoading(true);
-      const response = await floorApi.getById(id);
-      setFloor(response.data.floor);
+      const [floorResponse, towerResponse] = await Promise.all([
+        floorApi.getById(id),
+        towerApi.getInfo()
+      ]);
+      setFloor(floorResponse.data.floor);
+      if (towerResponse.data && towerResponse.data.towerInfo) {
+        setTowerData(towerResponse.data.towerInfo);
+      }
     } catch (error) {
-      toast.error('Failed to load floor details');
+      toast.error('Failed to load details');
       console.error(error);
     } finally {
       setLoading(false);
@@ -347,18 +354,18 @@ const FloorDetailsPage = () => {
                   <h4 className="font-semibold mb-4 text-gray-900 dark:text-white">Contact Information</h4>
                   <div className="space-y-3">
                     <a
-                      href="tel:+15551234567"
+                      href={`tel:${towerData?.contactInfo?.phone?.replace(/[^0-9+]/g, '') || '+15551234567'}`}
                       className="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                     >
                       <HiPhone className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden="true" />
-                      <span>+1 (555) 123-4567</span>
+                      <span>{towerData?.contactInfo?.phone || '+1 (555) 123-4567'}</span>
                     </a>
                     <a
-                      href="mailto:leasing@towerspace.com"
+                      href={`mailto:${towerData?.contactInfo?.email || 'leasing@towerspace.com'}`}
                       className="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                     >
                       <HiMail className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden="true" />
-                      <span>leasing@towerspace.com</span>
+                      <span>{towerData?.contactInfo?.email || 'leasing@towerspace.com'}</span>
                     </a>
                   </div>
                 </div>

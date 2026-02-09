@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import {
@@ -13,11 +13,40 @@ import {
   HiUsers,
   HiOfficeBuilding
 } from 'react-icons/hi';
+import { towerApi } from '../../services/api';
 
 const AmenitiesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [towerData, setTowerData] = useState(null);
 
-  const amenities = [
+  useEffect(() => {
+    const fetchTowerInfo = async () => {
+      try {
+        const response = await towerApi.getInfo();
+        if (response.data && response.data.towerInfo) {
+          setTowerData(response.data.towerInfo);
+        }
+      } catch (error) {
+        console.error('Error fetching tower info:', error);
+      }
+    };
+    fetchTowerInfo();
+  }, []);
+
+  const iconMap = {
+    'wifi': <HiWifi className="h-8 w-8" />,
+    'security': <HiShieldCheck className="h-8 w-8" />,
+    'parking': <HiTruck className="h-8 w-8" />,
+    'lounge': <HiSparkles className="h-8 w-8" />,
+    'fitness': <HiHeart className="h-8 w-8" />,
+    'conference': <HiDesktopComputer className="h-8 w-8" />,
+    'reception': <HiPhone className="h-8 w-8" />,
+    'storage': <HiLockClosed className="h-8 w-8" />,
+    'community': <HiUsers className="h-8 w-8" />,
+    'business': <HiOfficeBuilding className="h-8 w-8" />
+  };
+
+  const defaultAmenities = [
     {
       icon: <HiWifi className="h-8 w-8" />,
       title: 'High-Speed Internet',
@@ -80,11 +109,21 @@ const AmenitiesPage = () => {
     }
   ];
 
-  const categories = ['All', 'Technology', 'Security', 'Convenience', 'Hospitality', 'Wellness', 'Business', 'Services', 'Community'];
+  const displayAmenities = towerData?.amenities?.length > 0
+    ? towerData.amenities.map(a => ({
+      ...a,
+      icon: iconMap[a.icon] || <HiSparkles className="h-8 w-8" />,
+      title: a.name,
+      description: a.description,
+      category: a.category || 'General'
+    }))
+    : defaultAmenities;
+
+  const categories = ['All', ...new Set(displayAmenities.map(a => a.category))];
 
   const filteredAmenities = selectedCategory === 'All'
-    ? amenities
-    : amenities.filter(amenity => amenity.category === selectedCategory);
+    ? displayAmenities
+    : displayAmenities.filter(amenity => amenity.category === selectedCategory);
 
   return (
     <>
@@ -101,9 +140,11 @@ const AmenitiesPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">World-Class Amenities</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              {towerData?.landingPage?.amenities?.title || 'World-Class Amenities'}
+            </h1>
             <p className="text-xl text-gray-200 max-w-3xl mx-auto">
-              Experience premium facilities designed to enhance productivity, wellness, and business success.
+              {towerData?.landingPage?.amenities?.description || 'Experience premium facilities designed to enhance productivity, wellness, and business success.'}
             </p>
           </motion.div>
         </div>

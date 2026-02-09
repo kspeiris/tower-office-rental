@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -11,9 +11,25 @@ import {
   HiCheckCircle
 } from 'react-icons/hi';
 import toast from 'react-hot-toast';
+import { towerApi } from '../../services/api';
 
 const ContactPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [towerData, setTowerData] = useState(null);
+
+  useEffect(() => {
+    const fetchTowerInfo = async () => {
+      try {
+        const response = await towerApi.getInfo();
+        if (response.data && response.data.towerInfo) {
+          setTowerData(response.data.towerInfo);
+        }
+      } catch (error) {
+        console.error('Error fetching tower info:', error);
+      }
+    };
+    fetchTowerInfo();
+  }, []);
 
   const initialValues = {
     name: '',
@@ -67,22 +83,34 @@ const ContactPage = () => {
     {
       icon: <HiLocationMarker className="h-6 w-6" />,
       title: 'Visit Us',
-      details: ['123 Business District', 'City Center, Metropolis 10001', 'United States']
+      details: towerData?.address
+        ? [
+          towerData.address.street,
+          `${towerData.address.city || ''} ${towerData.address.state || ''} ${towerData.address.zipCode || ''}`.trim(),
+          towerData.address.country
+        ].filter(Boolean)
+        : ['123 Business District', 'City Center, Metropolis 10001', 'United States']
     },
     {
       icon: <HiPhone className="h-6 w-6" />,
       title: 'Call Us',
-      details: ['+1 (555) 123-4567', '+1 (555) 987-6543']
+      details: towerData?.contactInfo?.phone
+        ? [towerData.contactInfo.phone]
+        : ['+1 (555) 123-4567']
     },
     {
       icon: <HiMail className="h-6 w-6" />,
       title: 'Email Us',
-      details: ['info@towerspace.com', 'leasing@towerspace.com']
+      details: towerData?.contactInfo?.email
+        ? [towerData.contactInfo.email]
+        : ['info@towerspace.com']
     },
     {
       icon: <HiClock className="h-6 w-6" />,
       title: 'Office Hours',
-      details: ['Monday - Friday: 9:00 AM - 6:00 PM', 'Saturday: 10:00 AM - 4:00 PM', 'Sunday: Closed']
+      details: towerData?.contactInfo?.officeHours
+        ? [towerData.contactInfo.officeHours]
+        : ['Monday - Friday: 9:00 AM - 6:00 PM', 'Saturday: 10:00 AM - 4:00 PM', 'Sunday: Closed']
     }
   ];
 

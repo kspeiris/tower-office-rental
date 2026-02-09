@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   HiOfficeBuilding,
@@ -15,6 +15,7 @@ import {
   FaInstagram
 } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { towerApi } from '../../services/api';
 
 // ============================================================================
 // FOOTER LINK COMPONENT
@@ -108,6 +109,21 @@ const ContactInfoItem = ({ icon: Icon, text, link = null, type = 'text' }) => {
 // ============================================================================
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [towerData, setTowerData] = useState(null);
+
+  useEffect(() => {
+    const fetchTowerInfo = async () => {
+      try {
+        const response = await towerApi.getInfo();
+        if (response.data && response.data.towerInfo) {
+          setTowerData(response.data.towerInfo);
+        }
+      } catch (error) {
+        console.error('Error fetching tower info:', error);
+      }
+    };
+    fetchTowerInfo();
+  }, []);
 
   const quickLinks = [
     { to: '/', label: 'Home' },
@@ -117,10 +133,10 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { href: 'https://facebook.com', icon: FaFacebook, label: 'Facebook' },
-    { href: 'https://twitter.com', icon: FaTwitter, label: 'Twitter' },
-    { href: 'https://linkedin.com', icon: FaLinkedin, label: 'LinkedIn' },
-    { href: 'https://instagram.com', icon: FaInstagram, label: 'Instagram' }
+    { href: towerData?.social?.facebook || 'https://facebook.com', icon: FaFacebook, label: 'Facebook' },
+    { href: towerData?.social?.twitter || 'https://twitter.com', icon: FaTwitter, label: 'Twitter' },
+    { href: towerData?.social?.linkedin || 'https://linkedin.com', icon: FaLinkedin, label: 'LinkedIn' },
+    { href: towerData?.social?.instagram || 'https://instagram.com', icon: FaInstagram, label: 'Instagram' }
   ];
 
   return (
@@ -195,18 +211,20 @@ const Footer = () => {
             <ul className="space-y-3">
               <ContactInfoItem
                 icon={HiLocationMarker}
-                text="123 Business District, City Center"
+                text={towerData?.address
+                  ? `${towerData.address.street || ''}, ${towerData.address.city || ''}`
+                  : "123 Business District, City Center"}
               />
               <ContactInfoItem
                 icon={HiPhone}
-                text="+1 (555) 123-4567"
-                link="+15551234567"
+                text={towerData?.contactInfo?.phone || "+1 (555) 123-4567"}
+                link={towerData?.contactInfo?.phone?.replace(/[^0-9+]/g, '') || "+15551234567"}
                 type="phone"
               />
               <ContactInfoItem
                 icon={HiMail}
-                text="info@towerspace.com"
-                link="info@towerspace.com"
+                text={towerData?.contactInfo?.email || "info@towerspace.com"}
+                link={towerData?.contactInfo?.email || "info@towerspace.com"}
                 type="email"
               />
             </ul>
