@@ -153,9 +153,9 @@ exports.getAllFloors = async (req, res) => {
     // Add virtuals manually
     const floorsWithVirtuals = floors.map(floor => ({
       ...floor,
-      formattedPrice: new Intl.NumberFormat('en-US', {
+      formattedPrice: new Intl.NumberFormat('en-LK', {
         style: 'currency',
-        currency: 'USD'
+        currency: 'LKR'
       }).format(floor.totalPrice),
       pricePerMonth: Math.round(floor.totalPrice / 12)
     }));
@@ -185,9 +185,9 @@ exports.getFloorById = async (req, res) => {
     }
 
     // Add virtuals
-    floor.formattedPrice = new Intl.NumberFormat('en-US', {
+    floor.formattedPrice = new Intl.NumberFormat('en-LK', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'LKR'
     }).format(floor.totalPrice);
     floor.pricePerMonth = Math.round(floor.totalPrice / 12);
 
@@ -327,9 +327,9 @@ exports.getAvailableFloors = async (req, res) => {
 
     const floorsWithVirtuals = floors.map(floor => ({
       ...floor,
-      formattedPrice: new Intl.NumberFormat('en-US', {
+      formattedPrice: new Intl.NumberFormat('en-LK', {
         style: 'currency',
-        currency: 'USD'
+        currency: 'LKR'
       }).format(floor.totalPrice),
       pricePerMonth: Math.round(floor.totalPrice / 12)
     }));
@@ -351,9 +351,9 @@ exports.getFeaturedFloors = async (req, res) => {
 
     const floorsWithVirtuals = floors.map(floor => ({
       ...floor,
-      formattedPrice: new Intl.NumberFormat('en-US', {
+      formattedPrice: new Intl.NumberFormat('en-LK', {
         style: 'currency',
-        currency: 'USD'
+        currency: 'LKR'
       }).format(floor.totalPrice),
       pricePerMonth: Math.round(floor.totalPrice / 12)
     }));

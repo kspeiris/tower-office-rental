@@ -59,8 +59,8 @@ const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel, isDangerou
           <button
             onClick={onConfirm}
             className={`px-4 py-2 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${isDangerous
-                ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
-                : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
+              ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+              : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
               }`}
           >
             Confirm
@@ -361,7 +361,7 @@ const FloorManagement = () => {
                       <td className="table-cell">
                         <div className="font-semibold text-gray-900 dark:text-white">{floor.formattedPrice}</div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
-                          ${floor.pricePerSqFt}/sq ft
+                          LKR {floor.pricePerSqFt}/sq ft
                         </div>
                       </td>
                       <td className="table-cell">

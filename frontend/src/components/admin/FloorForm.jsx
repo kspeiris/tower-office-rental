@@ -57,11 +57,11 @@ const FloorForm = ({ floor, onSuccess }) => {
       .max(10000, 'Maximum area is 10,000 sq ft'),
     pricePerSqFt: Yup.number()
       .required('Price per sq ft is required')
-      .min(1, 'Minimum price is $1/sq ft')
-      .max(100, 'Maximum price is $100/sq ft'),
+      .min(1, 'Minimum price is LKR 1/sq ft')
+      .max(100, 'Maximum price is LKR 100/sq ft'),
     totalPrice: Yup.number()
       .required('Total price is required')
-      .min(1000, 'Minimum price is $1,000'),
+      .min(1000, 'Minimum price is LKR 1,000'),
     status: Yup.string()
       .oneOf(['available', 'occupied', 'under_maintenance', 'reserved'])
       .required('Status is required')
@@ -380,7 +380,7 @@ const FloorForm = ({ floor, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Price per sq ft ($) *
+                Price per sq ft (LKR) *
               </label>
               <Field
                 type="number"
@@ -393,7 +393,7 @@ const FloorForm = ({ floor, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Total Price ($) *
+                Total Price (LKR) *
               </label>
               <Field
                 type="number"
@@ -402,7 +402,7 @@ const FloorForm = ({ floor, onSuccess }) => {
               />
               <ErrorMessage name="totalPrice" component="div" className="mt-1 text-sm text-red-600" />
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Calculated: ${(values.area * values.pricePerSqFt || 0).toLocaleString()}
+                Calculated: LKR {(values.area * values.pricePerSqFt || 0).toLocaleString()}
               </p>
             </div>
           </div>
@@ -493,8 +493,8 @@ const FloorForm = ({ floor, onSuccess }) => {
                       setFieldValue('amenities', newAmenities);
                     }}
                     className={`flex items-center justify-center px-3 py-2 rounded-lg border transition-all ${isSelected
-                        ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-600 dark:border-primary-500 text-primary-700 dark:text-primary-300'
-                        : 'border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400'
+                      ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-600 dark:border-primary-500 text-primary-700 dark:text-primary-300'
+                      : 'border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400'
                       }`}
                   >
                     <span className="text-sm capitalize">

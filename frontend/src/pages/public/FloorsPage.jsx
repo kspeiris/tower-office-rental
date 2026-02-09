@@ -274,7 +274,7 @@ const FloorsPage = () => {
                   {/* Price Range */}
                   <div className="space-y-3">
                     <label className="text-xs font-black text-gray-500 uppercase tracking-widest pl-1">
-                      Budget Range ($)
+                      Budget Range (LKR)
                     </label>
                     <div className="flex items-center space-x-3">
                       <input

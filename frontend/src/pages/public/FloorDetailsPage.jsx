@@ -160,8 +160,8 @@ const FloorDetailsPage = () => {
                           key={index}
                           onClick={() => setCurrentImageIndex(index)}
                           className={`w-2 h-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-white ${index === currentImageIndex
-                              ? 'bg-white w-8'
-                              : 'bg-white/50 hover:bg-white/75'
+                            ? 'bg-white w-8'
+                            : 'bg-white/50 hover:bg-white/75'
                             }`}
                           role="tab"
                           aria-label={`View image ${index + 1}`}
@@ -183,8 +183,8 @@ const FloorDetailsPage = () => {
                           key={index}
                           onClick={() => setCurrentImageIndex(index)}
                           className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all focus:outline-none focus:ring-2 focus:ring-white ${index === currentImageIndex
-                              ? 'border-white'
-                              : 'border-transparent opacity-60 hover:opacity-100'
+                            ? 'border-white'
+                            : 'border-transparent opacity-60 hover:opacity-100'
                             }`}
                           aria-label={`View image ${index + 1}`}
                           aria-pressed={index === currentImageIndex}
@@ -235,9 +235,9 @@ const FloorDetailsPage = () => {
                   <div className="text-center">
                     <div className="text-3xl font-bold mb-2 text-yellow-300">{floor.formattedPrice || 'Contact for pricing'}</div>
                     <div className="text-gray-200 mb-4">
-                      {floor.pricePerSqFt ? `$${floor.pricePerSqFt}/sq ft` : ''}
+                      {floor.pricePerSqFt ? `LKR ${floor.pricePerSqFt}/sq ft` : ''}
                       {floor.pricePerSqFt && floor.pricePerMonth ? ' • ' : ''}
-                      {floor.pricePerMonth ? `$${floor.pricePerMonth.toLocaleString()}/month` : ''}
+                      {floor.pricePerMonth ? `LKR ${floor.pricePerMonth.toLocaleString()}/month` : ''}
                     </div>
                     {floor.status === 'available' ? (
                       <Link
@@ -292,9 +292,9 @@ const FloorDetailsPage = () => {
                     <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">Pricing Details</h4>
                     <div className="space-y-1 text-gray-600 dark:text-gray-400">
                       <div>Area: {floor.area.toLocaleString()} sq ft</div>
-                      <div>Price per sq ft: ${floor.pricePerSqFt}</div>
+                      <div>Price per sq ft: LKR {floor.pricePerSqFt}</div>
                       <div>Annual price: {floor.formattedPrice}</div>
-                      <div>Monthly equivalent: ${floor.pricePerMonth?.toLocaleString()}</div>
+                      <div>Monthly equivalent: LKR {floor.pricePerMonth?.toLocaleString()}</div>
                     </div>
                   </div>
                 </div>

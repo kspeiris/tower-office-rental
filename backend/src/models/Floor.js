@@ -97,15 +97,15 @@ const floorSchema = new mongoose.Schema({
 });
 
 // Virtual for formatted price
-floorSchema.virtual('formattedPrice').get(function() {
-  return new Intl.NumberFormat('en-US', {
+floorSchema.virtual('formattedPrice').get(function () {
+  return new Intl.NumberFormat('en-LK', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'LKR'
   }).format(this.totalPrice);
 });
 
 // Virtual for price per month
-floorSchema.virtual('pricePerMonth').get(function() {
+floorSchema.virtual('pricePerMonth').get(function () {
   return Math.round(this.totalPrice / 12);
 });
 

@@ -57,7 +57,7 @@ const FloorCard = ({ floor, viewMode = 'grid' }) => {
               </div>
               <div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">Monthly</div>
-                <div className="font-semibold text-gray-900 dark:text-white">${floor.pricePerMonth?.toLocaleString()}/mo</div>
+                <div className="font-semibold text-gray-900 dark:text-white">LKR {floor.pricePerMonth?.toLocaleString()}/mo</div>
               </div>
               <div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">Max Capacity</div>
@@ -142,7 +142,7 @@ const FloorCard = ({ floor, viewMode = 'grid' }) => {
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Monthly</div>
             <div className="font-semibold text-gray-900 dark:text-white">
-              {floor.pricePerMonth ? `$${floor.pricePerMonth.toLocaleString()}/mo` : 'Contact'}
+              {floor.pricePerMonth ? `LKR ${floor.pricePerMonth.toLocaleString()}/mo` : 'Contact'}
             </div>
           </div>
           <div>

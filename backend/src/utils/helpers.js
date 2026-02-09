@@ -1,7 +1,7 @@
 const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('en-LK', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'LKR',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   }).format(amount);
@@ -57,7 +57,7 @@ const validatePhone = (phone) => {
 const paginate = (array, page, limit) => {
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
-  
+
   return {
     data: array.slice(startIndex, endIndex),
     pagination: {

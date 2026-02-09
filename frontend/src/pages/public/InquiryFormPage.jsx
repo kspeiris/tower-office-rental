@@ -269,7 +269,7 @@ const InquiryFormPage = () => {
 
                           <div>
                             <label htmlFor="budget" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                              Budget ($)
+                              Budget (LKR)
                             </label>
                             <Field
                               type="number"
@@ -382,7 +382,7 @@ const InquiryFormPage = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-400">Monthly</span>
-                      <span className="font-semibold text-gray-900 dark:text-white">${floor.pricePerMonth?.toLocaleString()}/mo</span>
+                      <span className="font-semibold text-gray-900 dark:text-white">LKR {floor.pricePerMonth?.toLocaleString()}/mo</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-400">Status</span>

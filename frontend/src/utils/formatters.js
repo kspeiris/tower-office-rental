@@ -1,6 +1,6 @@
 // Currency formatting
-export const formatCurrency = (amount, currency = 'USD') => {
-  return new Intl.NumberFormat('en-US', {
+export const formatCurrency = (amount, currency = 'LKR') => {
+  return new Intl.NumberFormat('en-LK', {
     style: 'currency',
     currency: currency,
     minimumFractionDigits: 0,
@@ -15,7 +15,7 @@ export const formatDate = (dateString, options = {}) => {
     month: 'short',
     day: 'numeric'
   };
-  
+
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', { ...defaultOptions, ...options });
 };
@@ -34,11 +34,11 @@ export const formatDateTime = (dateString) => {
 // File size formatting
 export const formatFileSize = (bytes) => {
   if (bytes === 0) return '0 Bytes';
-  
+
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
@@ -46,11 +46,11 @@ export const formatFileSize = (bytes) => {
 export const formatPhoneNumber = (phoneNumber) => {
   const cleaned = ('' + phoneNumber).replace(/\D/g, '');
   const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-  
+
   if (match) {
     return '(' + match[1] + ') ' + match[2] + '-' + match[3];
   }
-  
+
   return phoneNumber;
 };
 
@@ -74,7 +74,7 @@ export const formatStatus = (status) => {
     'closed': 'Closed',
     'rejected': 'Rejected'
   };
-  
+
   return statusMap[status] || status;
 };
 
@@ -92,10 +92,10 @@ export const formatPercentage = (value, decimals = 2) => {
 export const formatDuration = (minutes) => {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  
+
   if (hours === 0) {
     return `${mins}m`;
   }
-  
+
   return `${hours}h ${mins}m`;
 };
